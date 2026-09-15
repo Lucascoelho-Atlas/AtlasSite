@@ -49,7 +49,7 @@ body.dark{
   --card:#122132;
   --text:#e7edf3;
   --muted:#8b98a5;
-  --line:#22374a;
+  --line:#17263a;
   --soft:#1b2c3e;
   --green-bg:#0f2e22;
   --orange-bg:#332208;
@@ -719,6 +719,12 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
             <div class="form-group"><label>Título do quiz</label><input id="quizTitle" type="text" placeholder="Ex.: Quiz — Present Simple"></div>
             <div class="form-group"><label>Aula(s) relacionada(s)</label><input id="quizLessonRef" type="text" placeholder="Ex.: Lesson 04"></div>
 
+            <label>Perguntas (múltipla escolha)</label>
+            <div id="quizQuestionBuilder"></div>
+            <button type="button" class="btn-secondary" style="width:100%;margin-bottom:14px" onclick="addQuizQuestionBlock()">+ Adicionar pergunta</button>
+
+            <div class="login-divider" style="margin:4px 0 16px"><span>ou importe por CSV</span></div>
+
             <button type="button" class="btn-secondary" style="width:100%;margin-bottom:14px" onclick="downloadQuizTemplate()">⬇ Baixar modelo CSV</button>
 
             <div class="form-group">
@@ -727,10 +733,10 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
             </div>
 
             <div class="form-buttons">
-              <button class="btn-primary" id="quizSaveBtn" onclick="saveQuiz()">Importar quiz</button>
+              <button class="btn-primary" id="quizSaveBtn" onclick="saveQuiz()">Salvar quiz</button>
               <button id="quizCancelEdit" class="btn-secondary hidden" onclick="cancelQuizEdit()">Cancelar</button>
             </div>
-            <p style="font-size:12px;color:var(--muted);margin-top:10px">Preencha a planilha com uma pergunta por linha e suba aqui. Monte quantas quiser fora do app e é só importar.</p>
+            <p style="font-size:12px;color:var(--muted);margin-top:10px">Escreva as perguntas aqui em cima, ou suba um CSV (se enviar um arquivo, ele tem prioridade sobre o que estiver escrito manualmente).</p>
           </div>
 
           <div class="card">
@@ -1001,7 +1007,7 @@ function toggleLoginPasswordVisibility(){
 
 async function login(){
   const email=document.getElementById("loginEmail").value.trim();
-  const password=document.getElementById("loginPassword").value;
+  const password=document.getElementById("loginPassword").value.trim();
   const box=document.getElementById("loginError");
   box.style.display="none";
   if(!email||!password){box.textContent="Digite seu e-mail e sua senha.";box.style.display="block";return}
@@ -2245,15 +2251,62 @@ function parseQuizCsv(text){
   return questions;
 }
 
+function addQuizQuestionBlock(data){
+  data = data || {question_text:"", options:["",""], correct_option:null};
+  qBuilderCounter++;
+  const qId=qBuilderCounter;
+  const container=document.getElementById("quizQuestionBuilder");
+  const div=document.createElement("div");
+  div.className="question-block";
+  div.dataset.qid=qId;
+
+  let optionsHtml="";
+  const opts=(Array.isArray(data.options)&&data.options.length>=2)?data.options:["",""];
+  opts.forEach((opt,idx)=>{
+    const checked=data.correct_option===idx?"checked":"";
+    optionsHtml+=`<div class="q-option-row"><input type="radio" name="quiz-correct-${qId}" ${checked}><input type="text" class="q-option-text" value="${escapeHTML(opt)}" placeholder="Alternativa ${idx+1}"><button type="button" onclick="removeOption(this)">✕</button></div>`;
+  });
+
+  div.innerHTML=`
+    <div class="question-block-head">
+      <strong style="font-size:13px">Pergunta</strong>
+      <button type="button" class="q-remove" onclick="removeQuestionBlock(${qId})">✕ Remover</button>
+    </div>
+    <textarea class="q-text" placeholder="Digite a pergunta...">${escapeHTML(data.question_text||"")}</textarea>
+    <div class="q-options">
+      ${optionsHtml}
+      <button type="button" class="btn-secondary" style="font-size:12px;padding:6px 10px" onclick="addOption(${qId})">+ Alternativa</button>
+    </div>`;
+  container.appendChild(div);
+}
+
+function collectQuizQuestions(){
+  const blocks=document.querySelectorAll("#quizQuestionBuilder .question-block");
+  const questions=[];
+  for(const block of blocks){
+    const question_text=block.querySelector(".q-text").value.trim();
+    if(!question_text) throw new Error("Preencha o texto de todas as perguntas.");
+    const rows=block.querySelectorAll(".q-option-row");
+    const options=[];
+    let correct_option=null;
+    rows.forEach((row,idx)=>{
+      const val=row.querySelector(".q-option-text").value.trim();
+      if(!val) throw new Error("Preencha todas as alternativas ou remova as vazias.");
+      options.push(val);
+      if(row.querySelector('input[type="radio"]').checked) correct_option=idx;
+    });
+    if(options.length<2) throw new Error("Cada pergunta precisa de pelo menos 2 alternativas.");
+    if(correct_option===null) throw new Error("Marque a alternativa correta de cada pergunta.");
+    questions.push({question_text,options,correct_option});
+  }
+  return questions;
+}
+
 async function saveQuiz(){
   const title=document.getElementById("quizTitle").value.trim();
   const lessonRef=document.getElementById("quizLessonRef").value.trim();
   const file=document.getElementById("quizCsvFile").files[0];
   if(!title){alert("Preencha o título do quiz.");return}
-  if(!editingQuizId && !file){alert("Selecione o arquivo CSV com as perguntas.");return}
-
-  const {data:{user}}=await supabaseClient.auth.getUser();
-  if(!user){alert("Sessão expirada. Entre novamente.");return}
 
   let questions=null;
   if(file){
@@ -2261,7 +2314,16 @@ async function saveQuiz(){
       const text=await file.text();
       questions=parseQuizCsv(text);
     }catch(err){ alert(err.message); return; }
+  }else{
+    const manualBlocks=document.querySelectorAll("#quizQuestionBuilder .question-block");
+    if(manualBlocks.length>0){
+      try{ questions=collectQuizQuestions(); }catch(err){ alert(err.message); return; }
+    }
   }
+  if(!editingQuizId && !questions){alert("Adicione perguntas manualmente ou selecione um arquivo CSV.");return}
+
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  if(!user){alert("Sessão expirada. Entre novamente.");return}
 
   const saveBtn=document.getElementById("quizSaveBtn");
   saveBtn.disabled=true; saveBtn.textContent="Salvando...";
@@ -2287,13 +2349,13 @@ async function saveQuiz(){
       if(qErr) throw new Error("Falha ao salvar perguntas: "+qErr.message);
     }
 
-    showQuizMessage(editingQuizId?(questions?"Quiz atualizado! (resultados antigos ligados às perguntas antigas foram apagados)":"Quiz atualizado!"):"Quiz importado!");
+    showQuizMessage(editingQuizId?(questions?"Quiz atualizado! (resultados antigos ligados às perguntas antigas foram apagados)":"Quiz atualizado!"):"Quiz salvo!");
     resetQuizForm();
     await loadQuizzes();
   }catch(err){
     alert(err.message);
   }finally{
-    saveBtn.disabled=false; saveBtn.textContent=editingQuizId?"Salvar alterações":"Importar quiz";
+    saveBtn.disabled=false; saveBtn.textContent=editingQuizId?"Salvar alterações":"Salvar quiz";
   }
 }
 function showQuizMessage(text){
@@ -2302,7 +2364,7 @@ function showQuizMessage(text){
   setTimeout(()=>box.style.display="none",3200);
 }
 
-function editQuiz(id){
+async function editQuiz(id){
   closeAllQuizMenus();
   const quiz=quizzes.find(q=>q.id===id); if(!quiz)return;
   editingQuizId=id;
@@ -2312,6 +2374,11 @@ function editQuiz(id){
   document.getElementById("quizFormTitle").textContent="Editar quiz";
   document.getElementById("quizSaveBtn").textContent="Salvar alterações";
   document.getElementById("quizCancelEdit").classList.remove("hidden");
+
+  document.getElementById("quizQuestionBuilder").innerHTML="";
+  const {data,error}=await supabaseClient.from("quiz_questions").select("*").eq("quiz_id",id).order("order_index",{ascending:true});
+  if(!error && data && data.length){ data.forEach(q=>addQuizQuestionBlock(q)); }
+
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function cancelQuizEdit(){ resetQuizForm(); }
@@ -2321,8 +2388,10 @@ function resetQuizForm(){
   document.getElementById("quizLessonRef").value="";
   document.getElementById("quizCsvFile").value="";
   document.getElementById("quizFormTitle").textContent="Novo quiz";
-  document.getElementById("quizSaveBtn").textContent="Importar quiz";
+  document.getElementById("quizSaveBtn").textContent="Salvar quiz";
   document.getElementById("quizCancelEdit").classList.add("hidden");
+  document.getElementById("quizQuestionBuilder").innerHTML="";
+  addQuizQuestionBlock();
 }
 
 async function deleteQuiz(id){
@@ -2800,7 +2869,7 @@ function loadFullTheme(){
 async function createStudentLogin(){
   const name=document.getElementById("newStudentName").value.trim();
   const email=document.getElementById("newStudentEmail").value.trim();
-  const password=document.getElementById("newStudentPassword").value;
+  const password=document.getElementById("newStudentPassword").value.trim();
   if(!name||!email||!password){alert("Preencha nome, e-mail e senha.");return}
 
   const {data:{session}}=await supabaseClient.auth.getSession();
@@ -2848,6 +2917,7 @@ async function loadStudentProfiles(){
 }
 
 resetActivityForm();
+resetQuizForm();
 loadDarkMode();
 loadAccentColor();
 loadFullTheme();
