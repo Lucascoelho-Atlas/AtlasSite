@@ -6,7 +6,6 @@
 <title>ATLAS | Painel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 /* ============ CSS do Dashboard (atlas_dashboard.zip) ============ */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -140,7 +139,7 @@ h1{font-size:24px;margin:5px 0 0}h2{font-size:28px;margin:5px 0 8px}h3{font-size
 .welcome-tagline{font-size:12px;font-weight:800;letter-spacing:.08em;text-align:right;color:rgba(255,255,255,.85);line-height:1.7;white-space:nowrap;position:relative;z-index:1}
 .welcome-tagline .accent{color:#ffd166}
 .welcome-watermark{position:absolute;right:8px;bottom:-18px;width:130px;height:130px;opacity:.1;pointer-events:none}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:18px}
 .stat-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:19px;display:flex;gap:14px;align-items:center;cursor:pointer;transition:border-color .15s}
 .stat-card:hover{border-color:var(--red)}
 .stat-icon{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#fff;flex-shrink:0}
@@ -164,7 +163,6 @@ h1{font-size:24px;margin:5px 0 0}h2{font-size:28px;margin:5px 0 8px}h3{font-size
 .content-type{width:38px;height:38px;border-radius:8px;display:grid;place-items:center;font-size:10px;font-weight:800;background:var(--soft)}
 .content-type.material{background:var(--orange);color:#fff}
 .content-type.activity{background:#7c3aed;color:#fff}
-.content-type.quiz{background:var(--green);color:#fff}
 .content-info strong{display:block;font-size:12px}.content-info span{display:block;color:var(--muted);font-size:9px;margin-top:4px}
 .dots{color:var(--muted);font-size:11px}.quick-actions{display:flex;flex-direction:column;gap:9px}
 .quick-actions button{border:1px solid var(--line);border-radius:9px;padding:11px;display:flex;gap:11px;align-items:center;text-align:left}
@@ -181,21 +179,13 @@ h1{font-size:24px;margin:5px 0 0}h2{font-size:28px;margin:5px 0 8px}h3{font-size
 .menu-toggle svg{width:19px;height:19px}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:60}
 
-/* ============ Painel de Anotações ============ */
-.notes-panel{position:fixed;top:0;left:255px;width:340px;height:100vh;height:100dvh;background:var(--card);border-right:1px solid var(--line);box-shadow:4px 0 24px rgba(0,0,0,.18);z-index:90;display:flex;flex-direction:column;transform:translateX(0);transition:transform .2s ease}
-.notes-panel.hidden{transform:translateX(-110%)}
-.notes-panel-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
-.notes-panel-header h3{margin:0;font-size:15px}
-.notes-panel-header button{background:none;border:none;font-size:16px;color:var(--muted);cursor:pointer;padding:4px 8px}
-.notes-panel-body{padding:16px 18px;overflow-y:auto;flex:1}
-.notes-panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:85}
-.notes-panel-overlay.show{display:block}
+/* ============ Anotações (botão flutuante + modal central) ============ */
+.notes-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.28);z-index:70;border:none;cursor:pointer}
+.notes-fab svg{width:22px;height:22px}
 #newNoteText{width:100%;min-height:70px;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;resize:vertical}
 .note-item{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 34px 10px 12px;margin-bottom:8px;font-size:13px;position:relative;line-height:1.5}
 .note-item .note-date{font-size:10px;color:var(--muted);margin-bottom:4px}
 .note-item .note-del{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;padding:2px 6px}
-@media(max-width:950px){.notes-panel{left:78px}}
-@media(max-width:680px){.notes-panel{left:0;width:85%;max-width:340px}}
 .sidebar-overlay.show{display:block}
 @media(max-width:680px){
   .menu-toggle{display:flex}
@@ -323,16 +313,9 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
 .correction-question{border-bottom:1px solid var(--line);padding:16px 0}
 .correction-question:first-child{padding-top:0}
 
-/* ============ Quizzes ============ */
-.quiz-question-row{border-bottom:1px solid var(--line);padding:14px 0}
-.quiz-question-row:first-child{padding-top:0}
-.quiz-option-pick{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:13px;cursor:pointer}
-.quiz-option-pick:hover{background:var(--bg)}
-.quiz-option-pick input{margin-right:8px}
-.result-row{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:9px;padding:10px 13px;margin-bottom:8px;background:var(--card)}
-.result-score{font-weight:bold;font-size:13px}
-.result-score.good{color:var(--green)}
-.result-score.bad{color:var(--danger)}
+.option-pick{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:13px;cursor:pointer}
+.option-pick:hover{background:var(--bg)}
+.option-pick input{margin-right:8px}
 
 .theme-swatch{width:36px;height:36px;border-radius:50%;border:2px solid transparent;cursor:pointer}
 .day-check{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg)}
@@ -439,12 +422,10 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
       <button class="nav-item active" data-page="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg> <span>Dashboard</span></button>
       <button class="nav-item" data-page="aulas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> <span>Aulas</span></button>
       <button class="nav-item" data-page="flashcards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="14" height="10" rx="2"/><path d="M2 9v10a2 2 0 0 0 2 2h14"/></svg> <span>Flashcards</span></button>
-      <button class="nav-item" data-page="quizzes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg> <span>Quizzes</span></button>
       <button class="nav-item" data-page="atividades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> <span>Atividades</span></button>
       <button class="nav-item" data-page="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg> <span>Agenda</span></button>
 
       <p class="nav-label lower">OUTROS</p>
-      <button class="nav-item" onclick="toggleNotesPanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h4"/></svg> <span>Anotações</span></button>
       <button class="nav-item" data-page="config"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.96 19a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06A2 2 0 1 1 7.03 4.24l.06.06A1.7 1.7 0 0 0 8.96 4.6a1.7 1.7 0 0 0 1.04-1.56V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15.04 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.56 1.04H21a2 2 0 1 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg> <span>Configurações</span></button>
     </nav>
 
@@ -455,18 +436,23 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
 
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
 
-  <div id="notesPanel" class="notes-panel hidden">
-    <div class="notes-panel-header">
-      <h3>📝 Minhas anotações</h3>
-      <button onclick="toggleNotesPanel(false)">✕</button>
-    </div>
-    <div class="notes-panel-body">
-      <textarea id="newNoteText" placeholder="Escreva uma nova anotação..."></textarea>
-      <button class="btn-primary" style="width:100%;margin-top:8px" onclick="saveNote()">Salvar anotação</button>
-      <div id="notesList" style="margin-top:16px"></div>
+  <button class="notes-fab" onclick="toggleNotesPanel(true)" aria-label="Anotações">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h4"/></svg>
+  </button>
+
+  <div id="notesPanel" class="preview-modal hidden" onclick="if(event.target===this)toggleNotesPanel(false)">
+    <div class="preview-modal-inner" style="max-width:420px">
+      <div class="preview-modal-header">
+        <h3>📝 Minhas anotações</h3>
+        <button onclick="toggleNotesPanel(false)">✕</button>
+      </div>
+      <div class="preview-body" style="padding:20px">
+        <textarea id="newNoteText" placeholder="Escreva uma nova anotação..."></textarea>
+        <button class="btn-primary" style="width:100%;margin-top:8px" onclick="saveNote()">Salvar anotação</button>
+        <div id="notesList" style="margin-top:16px"></div>
+      </div>
     </div>
   </div>
-  <div class="notes-panel-overlay hidden" id="notesPanelOverlay" onclick="toggleNotesPanel(false)"></div>
 
   <main class="main">
     <header class="topbar">
@@ -511,11 +497,6 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
             <div><strong id="statFlashcards">0</strong><span>Flashcards</span><small id="statFlashcardsDelta" class="stat-delta"></small></div>
             <span class="stat-arrow">›</span>
           </article>
-          <article class="stat-card" onclick="goToPage('quizzes')">
-            <span class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg></span>
-            <div><strong id="statQuizzes">0</strong><span>Quizzes</span><small id="statQuizzesDelta" class="stat-delta"></small></div>
-            <span class="stat-arrow">›</span>
-          </article>
           <article class="stat-card" onclick="goToPage('aulas')">
             <span class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
             <div><strong id="statMateriais">0</strong><span>Materiais</span><small id="statMateriaisDelta" class="stat-delta"></small></div>
@@ -546,7 +527,6 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
             </div>
             <div class="quick-actions">
               <button onclick="goToPage('agenda')"><b>+</b><span><strong>Nova aula</strong><small>Ir para a agenda</small></span></button>
-              <button onclick="goToPage('quizzes')"><b>+</b><span><strong>Novo quiz</strong><small>Importar perguntas</small></span></button>
               <button onclick="goToPage('flashcards')"><b>+</b><span><strong>Flashcards</strong><small>Criar conjunto de cards</small></span></button>
               <button onclick="goToPage('aulas')"><b>↑</b><span><strong>Enviar material</strong><small>PDF, Word...</small></span></button>
             </div>
@@ -746,69 +726,6 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
         </div>
       </div>
 
-      <!-- ===================== PÁGINA: QUIZZES ===================== -->
-      <div id="page-quizzes" class="page-view">
-        <div class="main-grid">
-          <div class="card">
-            <h2 id="quizFormTitle">Novo quiz</h2>
-            <div id="quizFormMessage" class="success"></div>
-            <div class="form-group"><label>Título do quiz</label><input id="quizTitle" type="text" placeholder="Ex.: Quiz — Present Simple"></div>
-            <div class="form-group"><label>Aula(s) relacionada(s)</label><input id="quizLessonRef" type="text" placeholder="Ex.: Lesson 04"></div>
-
-            <label>Perguntas (múltipla escolha)</label>
-            <div id="quizQuestionBuilder"></div>
-            <button type="button" class="btn-secondary" style="width:100%;margin-bottom:14px" onclick="addQuizQuestionBlock()">+ Adicionar pergunta</button>
-
-            <div class="login-divider" style="margin:4px 0 16px"><span>ou importe por CSV</span></div>
-
-            <button type="button" class="btn-secondary" style="width:100%;margin-bottom:14px" onclick="downloadQuizTemplate()">⬇ Baixar modelo CSV</button>
-
-            <div class="form-group">
-              <label>Arquivo CSV com as perguntas</label>
-              <input id="quizCsvFile" type="file" accept=".csv">
-            </div>
-
-            <div class="form-buttons">
-              <button class="btn-primary" id="quizSaveBtn" onclick="saveQuiz()">Salvar quiz</button>
-              <button id="quizCancelEdit" class="btn-secondary hidden" onclick="cancelQuizEdit()">Cancelar</button>
-            </div>
-            <p style="font-size:12px;color:var(--muted);margin-top:10px">Escreva as perguntas aqui em cima, ou suba um CSV (se enviar um arquivo, ele tem prioridade sobre o que estiver escrito manualmente).</p>
-          </div>
-
-          <div class="card">
-            <div class="section-title">
-              <h2>Quizzes</h2>
-              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                <input id="quizFilter" type="text" placeholder="Filtrar por título..." style="width:auto;min-width:160px" oninput="renderQuizzes()">
-                <button class="btn-secondary" onclick="loadQuizzes()">↻ Atualizar</button>
-              </div>
-            </div>
-            <div id="quizzesContainer"><div class="loading">Carregando quizzes...</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===================== MODAL: registrar resultado do quiz ===================== -->
-      <div id="quizResultModal" class="preview-modal hidden" onclick="if(event.target===this)closeQuizResultModal()">
-        <div class="preview-modal-inner">
-          <div class="preview-modal-header">
-            <h3 id="quizResultTitle">Registrar resultado</h3>
-            <button onclick="closeQuizResultModal()">✕</button>
-          </div>
-          <div id="quizResultBody" class="preview-body" style="padding:20px"></div>
-        </div>
-      </div>
-
-      <!-- ===================== MODAL: ver resultados do quiz ===================== -->
-      <div id="quizResultsListModal" class="preview-modal hidden" onclick="if(event.target===this)closeQuizResultsList()">
-        <div class="preview-modal-inner" style="max-width:480px">
-          <div class="preview-modal-header">
-            <h3 id="quizResultsListTitle">Resultados</h3>
-            <button onclick="closeQuizResultsList()">✕</button>
-          </div>
-          <div id="quizResultsListBody" class="preview-body" style="padding:20px"></div>
-        </div>
-      </div>
 
       <!-- ===================== PÁGINA: FLASHCARDS ===================== -->
       <div id="page-flashcards" class="page-view">
@@ -1019,7 +936,6 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
     <button class="student-tab-btn active" onclick="switchStudentTab('aula')">🎥 Aula Online</button>
     <button class="student-tab-btn" onclick="switchStudentTab('materiais')">📄 Materiais</button>
     <button class="student-tab-btn" onclick="switchStudentTab('atividades')">📝 Atividades</button>
-    <button class="student-tab-btn" onclick="switchStudentTab('quizzes')">✓ Quizzes</button>
   </nav>
 
   <main class="student-main">
@@ -1037,9 +953,6 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
     <div id="stab-atividades" class="student-tab-view">
       <div id="studentActivitiesContainer"><div class="loading">Carregando...</div></div>
     </div>
-    <div id="stab-quizzes" class="student-tab-view">
-      <div id="studentQuizzesContainer"><div class="loading">Carregando...</div></div>
-    </div>
   </main>
 
   <div id="studentActivityModal" class="preview-modal hidden" onclick="if(event.target===this)closeStudentActivityModal()">
@@ -1052,15 +965,6 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
     </div>
   </div>
 
-  <div id="studentQuizModal" class="preview-modal hidden" onclick="if(event.target===this)closeStudentQuizModal()">
-    <div class="preview-modal-inner">
-      <div class="preview-modal-header">
-        <h3 id="studentQuizModalTitle">Quiz</h3>
-        <button onclick="closeStudentQuizModal()">✕</button>
-      </div>
-      <div id="studentQuizModalBody" class="preview-body" style="padding:20px"></div>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -1068,12 +972,11 @@ const titles = {
   inicio: "Dashboard",
   aulas: "Aulas",
   flashcards: "Flashcards",
-  quizzes: "Quizzes",
   atividades: "Atividades",
   agenda: "Agenda",
   config: "Configurações"
 };
-const REAL_PAGES = {inicio:"page-inicio", agenda:"page-agenda", flashcards:"page-flashcards", aulas:"page-aulas", atividades:"page-atividades", quizzes:"page-quizzes", config:"page-config"};
+const REAL_PAGES = {inicio:"page-inicio", agenda:"page-agenda", flashcards:"page-flashcards", aulas:"page-aulas", atividades:"page-atividades", config:"page-config"};
 
 function goToPage(page){
   document.querySelectorAll(".nav-item").forEach(x=>x.classList.toggle("active", x.dataset.page===page));
@@ -1101,10 +1004,8 @@ function toggleSidebar(force){
 let notes=[];
 function toggleNotesPanel(force){
   const panel=document.getElementById("notesPanel");
-  const overlay=document.getElementById("notesPanelOverlay");
   const shouldShow = typeof force==="boolean" ? force : panel.classList.contains("hidden");
   panel.classList.toggle("hidden", !shouldShow);
-  overlay.classList.toggle("show", shouldShow && window.innerWidth<=680);
   if(shouldShow) loadNotes();
 }
 async function loadNotes(){
@@ -1232,7 +1133,6 @@ async function showApp(){
   loadFlashcards();
   loadMaterials();
   loadActivities();
-  loadQuizzes();
   loadProfileAvatar();
   loadBusySchedule();
   loadMeetLinkSetting();
@@ -1300,13 +1200,12 @@ function renderDashRecentContent(){
   const items=[];
   (materials||[]).forEach(m=>items.push({title:m.title||`Material — ${m.student}`, date:m.created_at, type:"Material", icon:"PDF", cls:"material"}));
   (activities||[]).forEach(a=>items.push({title:a.title, date:a.created_at, type:"Atividade", icon:"A", cls:"activity"}));
-  (quizzes||[]).forEach(q=>items.push({title:q.title, date:q.created_at, type:"Quiz", icon:"Q", cls:"quiz"}));
 
   items.sort((a,b)=>new Date(b.date)-new Date(a.date));
   const top=items.slice(0,6);
 
   if(top.length===0){
-    box.innerHTML='<div class="empty">Nada por aqui ainda. Crie uma atividade, um quiz ou envie um material.</div>';
+    box.innerHTML='<div class="empty">Nada por aqui ainda. Crie uma atividade ou envie um material.</div>';
     return;
   }
   box.innerHTML=top.map(it=>{
@@ -2437,378 +2336,9 @@ function closeCorrection(){
   currentCorrectionQuestions=[];
 }
 
-/* ================= QUIZZES (importar CSV + correção automática) ================= */
-let quizzes=[];
-let editingQuizId=null;
-let currentQuizResultId=null;
-let currentQuizResultQuestions=[];
-
-function downloadQuizTemplate(){
-  const rows=[
-    ["Pergunta","Alternativa A","Alternativa B","Alternativa C","Alternativa D","Resposta Correta"],
-    ["What is the past tense of 'go'?","went","goed","gone","going","A"],
-    ["Choose the correct article: ___ apple","a","an","the","-","B"]
-  ];
-  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
-  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url; a.download="modelo-quiz.csv"; a.click();
-  URL.revokeObjectURL(url);
-}
-
-async function loadQuizzes(){
-  const box=document.getElementById("quizzesContainer");
-  if(box) box.innerHTML='<div class="loading">Carregando quizzes...</div>';
-  const {data,error}=await supabaseClient.from("quizzes").select("*,quiz_questions(count),quiz_attempts(count)").order("created_at",{ascending:false});
-  if(error){
-    if(box) box.innerHTML=`<div class="empty">Erro ao carregar quizzes.<br>${escapeHTML(error.message)}<br><small style="color:var(--muted)">Confira se as tabelas de quiz já foram criadas no Supabase.</small></div>`;
-    return;
-  }
-  quizzes=(data||[]).map(q=>({...q, qcount:q.quiz_questions?.[0]?.count||0, attemptCount:q.quiz_attempts?.[0]?.count||0}));
-  renderQuizzes();
-  const statQuiz=document.getElementById("statQuizzes");
-  if(statQuiz) statQuiz.textContent=quizzes.length;
-  const weekStartQuiz=startOfThisWeek();
-  const quizWeek=quizzes.filter(q=>q.created_at && new Date(q.created_at)>=weekStartQuiz).length;
-  renderStatDelta("statQuizzesDelta",quizWeek,"novos");
-  renderDashRecentContent();
-}
-
-function parseQuizCsv(text){
-  const parsed=Papa.parse(text.trim(),{header:true,skipEmptyLines:true});
-  if(parsed.errors && parsed.errors.length){
-    throw new Error("Erro ao ler o CSV: "+parsed.errors[0].message);
-  }
-  const norm=row=>{
-    const clean={};
-    Object.keys(row).forEach(k=>{ clean[k.trim().toLowerCase()]=(row[k]||"").trim(); });
-    return clean;
-  };
-  const letterIndex={a:0,b:1,c:2,d:3};
-  const questions=[];
-  parsed.data.forEach((rawRow,i)=>{
-    const row=norm(rawRow);
-    const question_text=row["pergunta"]||"";
-    if(!question_text) return;
-    const options=["alternativa a","alternativa b","alternativa c","alternativa d"]
-      .map(k=>row[k]||"")
-      .filter(v=>v && v!=="-");
-    if(options.length<2) throw new Error(`Linha ${i+2}: precisa de pelo menos 2 alternativas preenchidas.`);
-    const letter=(row["resposta correta"]||"").toLowerCase();
-    const idx=letterIndex[letter];
-    if(idx===undefined || idx>=options.length) throw new Error(`Linha ${i+2}: "Resposta Correta" precisa ser A, B, C ou D (e apontar pra uma alternativa preenchida).`);
-    questions.push({question_text,options,correct_option:idx});
-  });
-  if(questions.length===0) throw new Error("Nenhuma pergunta válida encontrada no arquivo.");
-  return questions;
-}
-
-function addQuizQuestionBlock(data){
-  data = data || {question_text:"", options:["",""], correct_option:null};
-  qBuilderCounter++;
-  const qId=qBuilderCounter;
-  const container=document.getElementById("quizQuestionBuilder");
-  const div=document.createElement("div");
-  div.className="question-block";
-  div.dataset.qid=qId;
-
-  let optionsHtml="";
-  const opts=(Array.isArray(data.options)&&data.options.length>=2)?data.options:["",""];
-  opts.forEach((opt,idx)=>{
-    const checked=data.correct_option===idx?"checked":"";
-    optionsHtml+=`<div class="q-option-row"><input type="radio" name="quiz-correct-${qId}" ${checked}><input type="text" class="q-option-text" value="${escapeHTML(opt)}" placeholder="Alternativa ${idx+1}"><button type="button" onclick="removeOption(this)">✕</button></div>`;
-  });
-
-  div.innerHTML=`
-    <div class="question-block-head">
-      <strong style="font-size:13px">Pergunta</strong>
-      <button type="button" class="q-remove" onclick="removeQuestionBlock(${qId})">✕ Remover</button>
-    </div>
-    <textarea class="q-text" placeholder="Digite a pergunta...">${escapeHTML(data.question_text||"")}</textarea>
-    <div class="q-options">
-      ${optionsHtml}
-      <button type="button" class="btn-secondary" style="font-size:12px;padding:6px 10px" onclick="addOption(${qId})">+ Alternativa</button>
-    </div>`;
-  container.appendChild(div);
-}
-
-function collectQuizQuestions(){
-  const blocks=document.querySelectorAll("#quizQuestionBuilder .question-block");
-  const questions=[];
-  for(const block of blocks){
-    const question_text=block.querySelector(".q-text").value.trim();
-    if(!question_text) throw new Error("Preencha o texto de todas as perguntas.");
-    const rows=block.querySelectorAll(".q-option-row");
-    const options=[];
-    let correct_option=null;
-    rows.forEach((row,idx)=>{
-      const val=row.querySelector(".q-option-text").value.trim();
-      if(!val) throw new Error("Preencha todas as alternativas ou remova as vazias.");
-      options.push(val);
-      if(row.querySelector('input[type="radio"]').checked) correct_option=idx;
-    });
-    if(options.length<2) throw new Error("Cada pergunta precisa de pelo menos 2 alternativas.");
-    if(correct_option===null) throw new Error("Marque a alternativa correta de cada pergunta.");
-    questions.push({question_text,options,correct_option});
-  }
-  return questions;
-}
-
-async function saveQuiz(){
-  const title=document.getElementById("quizTitle").value.trim();
-  const lessonRef=document.getElementById("quizLessonRef").value.trim();
-  const file=document.getElementById("quizCsvFile").files[0];
-  if(!title){alert("Preencha o título do quiz.");return}
-
-  let questions=null;
-  if(file){
-    try{
-      const text=await file.text();
-      questions=parseQuizCsv(text);
-    }catch(err){ alert(err.message); return; }
-  }else{
-    const manualBlocks=document.querySelectorAll("#quizQuestionBuilder .question-block");
-    if(manualBlocks.length>0){
-      try{ questions=collectQuizQuestions(); }catch(err){ alert(err.message); return; }
-    }
-  }
-  if(!editingQuizId && !questions){alert("Adicione perguntas manualmente ou selecione um arquivo CSV.");return}
-
-  const {data:{user}}=await supabaseClient.auth.getUser();
-  if(!user){alert("Sessão expirada. Entre novamente.");return}
-
-  const saveBtn=document.getElementById("quizSaveBtn");
-  saveBtn.disabled=true; saveBtn.textContent="Salvando...";
-
-  try{
-    let quizId=editingQuizId;
-    if(editingQuizId){
-      const {error}=await supabaseClient.from("quizzes").update({title,lesson_reference:lessonRef||null}).eq("id",editingQuizId);
-      if(error) throw new Error("Falha ao atualizar quiz: "+error.message);
-      if(questions){
-        const {error:delErr}=await supabaseClient.from("quiz_questions").delete().eq("quiz_id",editingQuizId);
-        if(delErr) throw new Error("Falha ao atualizar perguntas: "+delErr.message);
-      }
-    }else{
-      const {data:inserted,error}=await supabaseClient.from("quizzes").insert({title,lesson_reference:lessonRef||null,user_id:user.id}).select().single();
-      if(error) throw new Error("Falha ao criar quiz: "+error.message);
-      quizId=inserted.id;
-    }
-
-    if(questions){
-      const rows=questions.map((q,idx)=>({quiz_id:quizId,question_text:q.question_text,options:q.options,correct_option:q.correct_option,order_index:idx}));
-      const {error:qErr}=await supabaseClient.from("quiz_questions").insert(rows);
-      if(qErr) throw new Error("Falha ao salvar perguntas: "+qErr.message);
-    }
-
-    showQuizMessage(editingQuizId?(questions?"Quiz atualizado! (resultados antigos ligados às perguntas antigas foram apagados)":"Quiz atualizado!"):"Quiz salvo!");
-    resetQuizForm();
-    await loadQuizzes();
-  }catch(err){
-    alert(err.message);
-  }finally{
-    saveBtn.disabled=false; saveBtn.textContent=editingQuizId?"Salvar alterações":"Salvar quiz";
-  }
-}
-function showQuizMessage(text){
-  const box=document.getElementById("quizFormMessage");
-  box.textContent=text;box.style.display="block";
-  setTimeout(()=>box.style.display="none",3200);
-}
-
-async function editQuiz(id){
-  closeAllQuizMenus();
-  const quiz=quizzes.find(q=>q.id===id); if(!quiz)return;
-  editingQuizId=id;
-  document.getElementById("quizTitle").value=quiz.title;
-  document.getElementById("quizLessonRef").value=quiz.lesson_reference||"";
-  document.getElementById("quizCsvFile").value="";
-  document.getElementById("quizFormTitle").textContent="Editar quiz";
-  document.getElementById("quizSaveBtn").textContent="Salvar alterações";
-  document.getElementById("quizCancelEdit").classList.remove("hidden");
-
-  document.getElementById("quizQuestionBuilder").innerHTML="";
-  const {data,error}=await supabaseClient.from("quiz_questions").select("*").eq("quiz_id",id).order("order_index",{ascending:true});
-  if(!error && data && data.length){ data.forEach(q=>addQuizQuestionBlock(q)); }
-
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-function cancelQuizEdit(){ resetQuizForm(); }
-function resetQuizForm(){
-  editingQuizId=null;
-  document.getElementById("quizTitle").value="";
-  document.getElementById("quizLessonRef").value="";
-  document.getElementById("quizCsvFile").value="";
-  document.getElementById("quizFormTitle").textContent="Novo quiz";
-  document.getElementById("quizSaveBtn").textContent="Salvar quiz";
-  document.getElementById("quizCancelEdit").classList.add("hidden");
-  document.getElementById("quizQuestionBuilder").innerHTML="";
-  addQuizQuestionBlock();
-}
-
-async function deleteQuiz(id){
-  const quiz=quizzes.find(q=>q.id===id); if(!quiz)return;
-  if(!confirm(`Excluir o quiz "${quiz.title}"? Isso apaga também todos os resultados registrados.`))return;
-  const {error}=await supabaseClient.from("quizzes").delete().eq("id",id);
-  if(error){alert("Erro ao excluir: "+error.message);return}
-  await loadQuizzes();
-}
-
-function closeAllQuizMenus(){document.querySelectorAll('[id^="quizMenu-"]').forEach(el=>el.classList.add("hidden"));}
-function toggleQuizMenu(event,id){
-  event.stopPropagation();
-  const menu=document.getElementById("quizMenu-"+id);
-  const wasHidden=menu.classList.contains("hidden");
-  closeAllQuizMenus(); closeAllMatMenus(); closeAllActMenus();
-  if(wasHidden) menu.classList.remove("hidden");
-}
-document.addEventListener("click", closeAllQuizMenus);
-
-function renderQuizzes(){
-  const container=document.getElementById("quizzesContainer");
-  if(!container)return;
-  const filterVal=(document.getElementById("quizFilter").value||"").trim().toLowerCase();
-  const filtered=quizzes.filter(q=>!filterVal||q.title.toLowerCase().includes(filterVal)||(q.lesson_reference||"").toLowerCase().includes(filterVal));
-  if(quizzes.length===0){container.innerHTML='<div class="empty">Nenhum quiz importado ainda.</div>';return}
-  if(filtered.length===0){container.innerHTML='<div class="empty">Nenhum resultado para essa busca.</div>';return}
-
-  container.innerHTML=filtered.map(q=>`
-    <div class="material-item">
-      <div>
-        <div class="material-title">${escapeHTML(q.title)}</div>
-        <div class="material-date">${q.lesson_reference?escapeHTML(q.lesson_reference)+" · ":""}${q.qcount} pergunta(s) · ${q.attemptCount} resultado(s) registrado(s)</div>
-      </div>
-      <div class="material-actions">
-        <button class="btn-secondary" style="font-size:12px;padding:7px 10px" onclick="openQuizResultModal(${q.id})">▶ Registrar resultado</button>
-        <button class="btn-secondary" style="font-size:12px;padding:7px 10px" onclick="openQuizResultsList(${q.id})">📊 Resultados</button>
-        <div class="mat-menu">
-          <button class="btn-secondary mat-menu-btn" style="font-size:12px;padding:7px 10px" onclick="toggleQuizMenu(event, ${q.id})">⋮</button>
-          <div class="mat-menu-popup hidden" id="quizMenu-${q.id}">
-            <button onclick="editQuiz(${q.id})">✏️ Editar</button>
-            <button onclick="deleteQuiz(${q.id})">🗑️ Excluir</button>
-          </div>
-        </div>
-      </div>
-    </div>`).join("");
-}
-
-/* ---- Registrar resultado (o professor marca o que o aluno escolheu, sistema corrige sozinho) ---- */
-async function openQuizResultModal(quizId){
-  closeAllQuizMenus();
-  const quiz=quizzes.find(q=>q.id===quizId); if(!quiz)return;
-  document.getElementById("quizResultTitle").textContent=`Registrar resultado — ${quiz.title}`;
-  const modal=document.getElementById("quizResultModal");
-  const body=document.getElementById("quizResultBody");
-  modal.classList.remove("hidden");
-  body.innerHTML='<div class="loading">Carregando perguntas...</div>';
-
-  const {data,error}=await supabaseClient.from("quiz_questions").select("*").eq("quiz_id",quizId).order("order_index",{ascending:true});
-  if(error){body.innerHTML=`<div class="empty">Erro: ${escapeHTML(error.message)}</div>`;return}
-  if(!data || data.length===0){body.innerHTML='<div class="empty">Esse quiz ainda não tem perguntas.</div>';return}
-
-  currentQuizResultId=quizId;
-  currentQuizResultQuestions=data;
-
-  const questionsHtml=data.map((q,idx)=>{
-    const optionsHtml=q.options.map((opt,i)=>`
-      <label class="quiz-option-pick"><input type="radio" name="qr-${q.id}" value="${i}"> ${escapeHTML(opt)}</label>
-    `).join("");
-    return `
-      <div class="quiz-question-row">
-        <div style="font-weight:bold;font-size:12px;color:var(--muted);margin-bottom:6px">Pergunta ${idx+1}</div>
-        <div style="margin-bottom:8px">${escapeHTML(q.question_text)}</div>
-        ${optionsHtml}
-      </div>`;
-  }).join("");
-
-  body.innerHTML=`
-    <div class="form-group"><label>Aluno</label><input id="quizResultStudent" type="text" list="studentListDatalist" placeholder="Ex.: Caio"></div>
-    ${questionsHtml}
-    <button class="btn-primary" style="width:100%;margin-top:14px" onclick="submitQuizResult()">Calcular e salvar resultado</button>
-    <div id="quizResultOutcome" style="margin-top:14px;font-weight:bold;text-align:center"></div>`;
-}
-function closeQuizResultModal(){
-  document.getElementById("quizResultModal").classList.add("hidden");
-  document.getElementById("quizResultBody").innerHTML="";
-  currentQuizResultId=null;
-  currentQuizResultQuestions=[];
-}
-
-async function submitQuizResult(){
-  const student=document.getElementById("quizResultStudent").value.trim();
-  if(!student){alert("Preencha o nome do aluno.");return}
-
-  const answers=[];
-  for(const q of currentQuizResultQuestions){
-    const radio=document.querySelector(`input[name="qr-${q.id}"]:checked`);
-    if(!radio){alert("Marque a alternativa escolhida em todas as perguntas.");return}
-    const selected=Number(radio.value);
-    answers.push({question_id:q.id, selected_option:selected, is_correct: selected===q.correct_option});
-  }
-
-  const {data:{user}}=await supabaseClient.auth.getUser();
-  if(!user){alert("Sessão expirada. Entre novamente.");return}
-
-  const score=answers.filter(a=>a.is_correct).length;
-  const total=currentQuizResultQuestions.length;
-
-  const {data:attempt,error:attErr}=await supabaseClient.from("quiz_attempts")
-    .insert({quiz_id:currentQuizResultId,student,score,total_questions:total,user_id:user.id})
-    .select().single();
-  if(attErr){alert("Erro ao salvar resultado: "+attErr.message);return}
-
-  const rows=answers.map(a=>({attempt_id:attempt.id,question_id:a.question_id,selected_option:a.selected_option,is_correct:a.is_correct}));
-  const {error:ansErr}=await supabaseClient.from("quiz_attempt_answers").insert(rows);
-  if(ansErr){alert("Erro ao salvar respostas: "+ansErr.message);return}
-
-  document.getElementById("quizResultOutcome").textContent=`${student}: ${score}/${total} acertos`;
-  await loadQuizzes();
-}
-
-/* ---- Ver resultados já registrados ---- */
-async function openQuizResultsList(quizId){
-  closeAllQuizMenus();
-  const quiz=quizzes.find(q=>q.id===quizId); if(!quiz)return;
-  document.getElementById("quizResultsListTitle").textContent=`Resultados — ${quiz.title}`;
-  const modal=document.getElementById("quizResultsListModal");
-  const body=document.getElementById("quizResultsListBody");
-  modal.classList.remove("hidden");
-  body.innerHTML='<div class="loading">Carregando...</div>';
-
-  const {data,error}=await supabaseClient.from("quiz_attempts").select("*").eq("quiz_id",quizId).order("taken_at",{ascending:false});
-  if(error){body.innerHTML=`<div class="empty">Erro: ${escapeHTML(error.message)}</div>`;return}
-  if(!data || data.length===0){body.innerHTML='<div class="empty">Nenhum resultado registrado ainda.</div>';return}
-
-  body.innerHTML=data.map(r=>{
-    const pct=r.total_questions?Math.round((r.score/r.total_questions)*100):0;
-    const cls=pct>=60?"good":"bad";
-    const date=new Date(r.taken_at).toLocaleDateString("pt-BR");
-    return `<div class="result-row">
-      <div><div style="font-weight:bold;font-size:13px">${escapeHTML(r.student)}</div><div style="font-size:11px;color:var(--muted)">${date}</div></div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span class="result-score ${cls}">${r.score}/${r.total_questions} (${pct}%)</span>
-        <button class="btn-danger" style="font-size:11px;padding:6px 9px" onclick="deleteQuizAttempt(${r.id},${quizId})">✕</button>
-      </div>
-    </div>`;
-  }).join("");
-}
-function closeQuizResultsList(){
-  document.getElementById("quizResultsListModal").classList.add("hidden");
-  document.getElementById("quizResultsListBody").innerHTML="";
-}
-async function deleteQuizAttempt(attemptId,quizId){
-  if(!confirm("Excluir esse resultado?"))return;
-  const {error}=await supabaseClient.from("quiz_attempts").delete().eq("id",attemptId);
-  if(error){alert("Erro ao excluir: "+error.message);return}
-  await openQuizResultsList(quizId);
-  await loadQuizzes();
-}
-
 /* ================= ÁREA DO ALUNO ================= */
 let currentStudentName=null;
 let studentActivitiesData=[];
-let studentQuizzesData=[];
 
 async function showStudentApp(studentName){
   currentStudentName=studentName;
@@ -2819,12 +2349,11 @@ async function showStudentApp(studentName){
   loadStudentMeetLink();
   loadStudentMaterials();
   loadStudentActivities();
-  loadStudentQuizzes();
   loadProfileAvatar();
 }
 
 function switchStudentTab(tab){
-  const tabs=["aula","materiais","atividades","quizzes"];
+  const tabs=["aula","materiais","atividades"];
   document.querySelectorAll(".student-tab-btn").forEach((btn,i)=>{
     btn.classList.toggle("active", tabs[i]===tab);
   });
@@ -2909,7 +2438,7 @@ async function openStudentActivity(assignmentId){
     const existing=answersByQ[q.id];
     let inputHtml;
     if(q.type==="multipla_escolha"){
-      inputHtml=q.options.map((opt,i)=>`<label class="quiz-option-pick"><input type="radio" name="sa-${q.id}" value="${i}" ${existing?.selected_option===i?"checked":""} ${readOnly?"disabled":""}> ${escapeHTML(opt)}</label>`).join("");
+      inputHtml=q.options.map((opt,i)=>`<label class="option-pick"><input type="radio" name="sa-${q.id}" value="${i}" ${existing?.selected_option===i?"checked":""} ${readOnly?"disabled":""}> ${escapeHTML(opt)}</label>`).join("");
     }else{
       inputHtml=`<textarea class="q-text" data-qid="${q.id}" ${readOnly?"disabled":""} placeholder="Sua resposta...">${escapeHTML(existing?.student_answer||"")}</textarea>`;
     }
@@ -2962,105 +2491,6 @@ async function submitStudentActivity(){
   alert("Respostas enviadas! Seu professor vai revisar em breve.");
   closeStudentActivityModal();
   await loadStudentActivities();
-}
-
-/* ---- Quizzes do aluno (fazer, correção automática) ---- */
-async function loadStudentQuizzes(){
-  const box=document.getElementById("studentQuizzesContainer");
-  box.innerHTML='<div class="loading">Carregando...</div>';
-  const {data,error}=await supabaseClient.from("quiz_assignments").select("*, quizzes(title, lesson_reference)").order("assigned_at",{ascending:false});
-  if(error){box.innerHTML=`<div class="empty">Erro ao carregar quizzes: ${escapeHTML(error.message)}</div>`;return}
-  studentQuizzesData=data||[];
-  renderStudentQuizzes();
-}
-function renderStudentQuizzes(){
-  const box=document.getElementById("studentQuizzesContainer");
-  if(!studentQuizzesData || studentQuizzesData.length===0){box.innerHTML='<div class="empty">Nenhum quiz liberado pra você ainda.</div>';return}
-  box.innerHTML=studentQuizzesData.map(a=>{
-    const title=a.quizzes?.title||"Quiz";
-    const lessonRef=a.quizzes?.lesson_reference;
-    const badge = a.status==="concluida" ? '<span class="badge badge-plan">✓ Concluído</span>' : '<span class="badge badge-pending">📝 Pendente</span>';
-    const actionBtn = a.status==="concluida"
-      ? `<button class="btn-secondary" style="font-size:12px;padding:7px 10px" onclick="openStudentQuizResult(${a.id})">Ver resultado</button>`
-      : `<button class="btn-primary" style="font-size:12px;padding:7px 10px" onclick="openStudentQuiz(${a.id})">Fazer quiz</button>`;
-    return `<div class="material-item">
-      <div><div class="material-title">${escapeHTML(title)}</div><div class="material-date">${lessonRef?escapeHTML(lessonRef):""}</div><div style="margin-top:6px">${badge}</div></div>
-      <div class="material-actions">${actionBtn}</div>
-    </div>`;
-  }).join("");
-}
-
-let currentStudentQuizAssignment=null;
-let currentStudentQuizQuestions=[];
-
-async function openStudentQuiz(assignmentId){
-  const assignment=studentQuizzesData.find(a=>a.id===assignmentId); if(!assignment)return;
-  currentStudentQuizAssignment=assignment;
-  document.getElementById("studentQuizModalTitle").textContent=assignment.quizzes?.title||"Quiz";
-  const modal=document.getElementById("studentQuizModal");
-  const body=document.getElementById("studentQuizModalBody");
-  modal.classList.remove("hidden");
-  body.innerHTML='<div class="loading">Carregando perguntas...</div>';
-
-  const {data,error}=await supabaseClient.from("quiz_questions").select("*").eq("quiz_id",assignment.quiz_id).order("order_index",{ascending:true});
-  if(error){body.innerHTML=`<div class="empty">Erro: ${escapeHTML(error.message)}</div>`;return}
-  if(!data||data.length===0){body.innerHTML='<div class="empty">Esse quiz ainda não tem perguntas.</div>';return}
-
-  currentStudentQuizQuestions=data;
-  body.innerHTML = data.map((q,idx)=>{
-    const optionsHtml=q.options.map((opt,i)=>`<label class="quiz-option-pick"><input type="radio" name="sq-${q.id}" value="${i}"> ${escapeHTML(opt)}</label>`).join("");
-    return `<div class="quiz-question-row">
-      <div style="font-weight:bold;font-size:12px;color:var(--muted);margin-bottom:6px">Pergunta ${idx+1}</div>
-      <div style="margin-bottom:8px">${escapeHTML(q.question_text)}</div>
-      ${optionsHtml}
-    </div>`;
-  }).join("") + `<button class="btn-primary" style="width:100%;margin-top:14px" onclick="submitStudentQuiz()">Enviar respostas</button>`;
-}
-function closeStudentQuizModal(){
-  document.getElementById("studentQuizModal").classList.add("hidden");
-  document.getElementById("studentQuizModalBody").innerHTML="";
-  currentStudentQuizAssignment=null;
-  currentStudentQuizQuestions=[];
-}
-async function submitStudentQuiz(){
-  const answers=[];
-  for(const q of currentStudentQuizQuestions){
-    const radio=document.querySelector(`input[name="sq-${q.id}"]:checked`);
-    if(!radio){alert("Responda todas as perguntas antes de enviar.");return}
-    const selected=Number(radio.value);
-    answers.push({question_id:q.id, selected_option:selected, is_correct: selected===q.correct_option});
-  }
-
-  const score=answers.filter(a=>a.is_correct).length;
-  const total=currentStudentQuizQuestions.length;
-
-  const {data:attempt,error:attErr}=await supabaseClient.from("quiz_attempts").insert({
-    quiz_id:currentStudentQuizAssignment.quiz_id, student:currentStudentName,
-    score, total_questions:total, user_id:currentStudentQuizAssignment.user_id
-  }).select().single();
-  if(attErr){alert("Erro ao salvar resultado: "+attErr.message);return}
-
-  const rows=answers.map(a=>({attempt_id:attempt.id,question_id:a.question_id,selected_option:a.selected_option,is_correct:a.is_correct}));
-  const {error:ansErr}=await supabaseClient.from("quiz_attempt_answers").insert(rows);
-  if(ansErr){alert("Erro ao salvar respostas: "+ansErr.message);return}
-
-  const {error:statusErr}=await supabaseClient.from("quiz_assignments").update({status:"concluida"}).eq("id",currentStudentQuizAssignment.id);
-  if(statusErr){alert("Erro ao atualizar status: "+statusErr.message);return}
-
-  document.getElementById("studentQuizModalBody").innerHTML=`<div style="text-align:center;padding:30px 10px"><div style="font-size:28px;font-weight:800">${score}/${total}</div><div style="color:var(--muted);margin-top:6px">acertos</div></div>`;
-  await loadStudentQuizzes();
-}
-async function openStudentQuizResult(assignmentId){
-  const assignment=studentQuizzesData.find(a=>a.id===assignmentId); if(!assignment)return;
-  document.getElementById("studentQuizModalTitle").textContent=assignment.quizzes?.title||"Quiz";
-  const modal=document.getElementById("studentQuizModal");
-  const body=document.getElementById("studentQuizModalBody");
-  modal.classList.remove("hidden");
-  body.innerHTML='<div class="loading">Carregando...</div>';
-
-  const {data,error}=await supabaseClient.from("quiz_attempts").select("*").eq("quiz_id",assignment.quiz_id).eq("student",currentStudentName).order("taken_at",{ascending:false}).limit(1).maybeSingle();
-  if(error || !data){body.innerHTML='<div class="empty">Resultado não encontrado.</div>';return}
-  body.innerHTML=`<div style="text-align:center;padding:30px 10px"><div style="font-size:28px;font-weight:800">${data.score}/${data.total_questions}</div><div style="color:var(--muted);margin-top:6px">acertos</div></div>`;
 }
 
 /* ================= MODO NOTURNO ================= */
@@ -3331,7 +2761,6 @@ async function loadStudentProfiles(){
 }
 
 resetActivityForm();
-resetQuizForm();
 loadDarkMode();
 loadAccentColor();
 loadFullTheme();
