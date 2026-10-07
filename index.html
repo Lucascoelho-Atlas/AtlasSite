@@ -180,8 +180,6 @@ h1{font-size:24px;margin:5px 0 0}h2{font-size:28px;margin:5px 0 8px}h3{font-size
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:60}
 
 /* ============ Anotações (botão flutuante + modal central) ============ */
-.notes-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.28);z-index:70;border:none;cursor:pointer}
-.notes-fab svg{width:22px;height:22px}
 #newNoteText{width:100%;min-height:70px;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;resize:vertical}
 .note-item{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 34px 10px 12px;margin-bottom:8px;font-size:13px;position:relative;line-height:1.5}
 .note-item .note-date{font-size:10px;color:var(--muted);margin-bottom:4px}
@@ -426,6 +424,7 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
       <button class="nav-item" data-page="agenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg> <span>Agenda</span></button>
 
       <p class="nav-label lower">OUTROS</p>
+      <button class="nav-item" data-page="notas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h4"/></svg> <span>Anotações</span></button>
       <button class="nav-item" data-page="config"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.96 19a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06A2 2 0 1 1 7.03 4.24l.06.06A1.7 1.7 0 0 0 8.96 4.6a1.7 1.7 0 0 0 1.04-1.56V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15.04 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.56 1.04H21a2 2 0 1 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg> <span>Configurações</span></button>
     </nav>
 
@@ -435,24 +434,6 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
   </aside>
 
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
-
-  <button class="notes-fab" onclick="toggleNotesPanel(true)" aria-label="Anotações">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h4"/></svg>
-  </button>
-
-  <div id="notesPanel" class="preview-modal hidden" onclick="if(event.target===this)toggleNotesPanel(false)">
-    <div class="preview-modal-inner" style="max-width:420px">
-      <div class="preview-modal-header">
-        <h3>📝 Minhas anotações</h3>
-        <button onclick="toggleNotesPanel(false)">✕</button>
-      </div>
-      <div class="preview-body" style="padding:20px">
-        <textarea id="newNoteText" placeholder="Escreva uma nova anotação..."></textarea>
-        <button class="btn-primary" style="width:100%;margin-top:8px" onclick="saveNote()">Salvar anotação</button>
-        <div id="notesList" style="margin-top:16px"></div>
-      </div>
-    </div>
-  </div>
 
   <main class="main">
     <header class="topbar">
@@ -468,7 +449,7 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
       <div class="top-actions">
         <button class="icon-btn" id="darkModeToggle" aria-label="Modo noturno" onclick="toggleDarkMode()">🌙</button>
         <button class="icon-btn" aria-label="Notificações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-        <button class="new-btn" id="newContent">+ Novo conteúdo</button>
+        <button class="new-btn" id="newContent" onclick="goToPage('aulas')">+ Novo conteúdo</button>
       </div>
     </header>
 
@@ -761,6 +742,21 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
       </div>
 
       <!-- ===================== PÁGINA: CONFIGURAÇÕES ===================== -->
+      <!-- ===================== PÁGINA: ANOTAÇÕES ===================== -->
+      <div id="page-notas" class="page-view">
+        <div class="main-grid">
+          <div class="card">
+            <h2>Nova anotação</h2>
+            <textarea id="newNoteText" placeholder="Escreva uma nova anotação..." style="width:100%;min-height:140px;padding:11px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;resize:vertical"></textarea>
+            <button class="btn-primary" style="width:100%;margin-top:10px" onclick="saveNote()">Salvar anotação</button>
+          </div>
+          <div class="card">
+            <div class="section-title"><h2>Minhas anotações</h2><button class="btn-secondary" onclick="loadNotes()">↻ Atualizar</button></div>
+            <div id="notesList"><div class="loading">Carregando...</div></div>
+          </div>
+        </div>
+      </div>
+
       <div id="page-config" class="page-view">
         <div class="main-grid">
           <div class="card">
@@ -974,9 +970,10 @@ const titles = {
   flashcards: "Flashcards",
   atividades: "Atividades",
   agenda: "Agenda",
+  notas: "Anotações",
   config: "Configurações"
 };
-const REAL_PAGES = {inicio:"page-inicio", agenda:"page-agenda", flashcards:"page-flashcards", aulas:"page-aulas", atividades:"page-atividades", config:"page-config"};
+const REAL_PAGES = {inicio:"page-inicio", agenda:"page-agenda", flashcards:"page-flashcards", aulas:"page-aulas", atividades:"page-atividades", notas:"page-notas", config:"page-config"};
 
 function goToPage(page){
   document.querySelectorAll(".nav-item").forEach(x=>x.classList.toggle("active", x.dataset.page===page));
@@ -990,6 +987,7 @@ function goToPage(page){
   window.scrollTo({top:0,behavior:"smooth"});
   toggleSidebar(false);
   if(page==="config") loadStudentProfiles();
+  if(page==="notas") loadNotes();
 }
 
 function toggleSidebar(force){
