@@ -247,7 +247,7 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
 @media(max-width:550px){.lesson-top{flex-direction:column}}
 
 /* ============ CSS reaproveitado dos Flash Cards ============ */
-.flash-grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+.flash-grid{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
 @media(max-width:900px){.flash-grid{grid-template-columns:1fr}}
 .flashcard{min-height:190px;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer}
 .flash-word{font-size:1.6rem;font-weight:bold}
@@ -414,6 +414,40 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
   #loginScreen *,#loginScreen *::before,#loginScreen *::after{animation:none!important;transition:none!important}
 }
 
+
+.login-card{position:relative;z-index:1}
+.login-divider{display:flex;align-items:center;gap:12px;margin-top:20px;color:var(--muted);font-size:12px}
+.login-divider::before,.login-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.login-eye-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;padding:4px}
+.login-eye-toggle svg{width:18px;height:18px;display:block}
+.login-card{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;box-shadow:var(--shadow)}
+.login-card h1{margin:0 0 5px}
+.login-mark{width:52px;height:52px;border-radius:12px;background:var(--navy);display:grid;place-items:center;margin-bottom:16px}
+.login-mark svg{width:60%;height:60%}
+.login-slogan{font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--text);margin:0 0 20px}
+.login-slogan .accent{color:var(--red)}
+
+/* ============ Navegação entre páginas dentro do painel ============ */
+.page-view{display:none}
+.page-view.active{display:block}
+.placeholder-panel{text-align:center;padding:60px 20px;color:var(--muted)}
+.placeholder-panel .icon{font-size:34px;margin-bottom:10px}
+
+/* ===== Animações (de index_1 animado) ===== */
+@keyframes lgFloat{from{transform:translateY(-10px) rotate(-4deg)}to{transform:translateY(12px) rotate(5deg)}}
+@keyframes lgRing{0%{opacity:.85;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.7)}}
+@keyframes lgDrift{to{transform:rotate(360deg)}}
+
+@media (max-width:900px){
+  #loginScreen{grid-template-columns:minmax(0,1fr);justify-items:center}
+  .lg-hero,.lg-float{display:none}
+  .login-card{justify-self:center;padding:28px}
+  .lg-climb{width:100%;height:46%;opacity:.8}
+}
+@media (prefers-reduced-motion:reduce){
+  #loginScreen *,#loginScreen *::before,#loginScreen *::after{animation:none!important;transition:none!important}
+}
+
 /* ============ Animações do painel ============ */
 .welcome .wl-text{position:relative;z-index:1}
 .welcome .wl-contours{position:absolute;right:-140px;top:-330px;width:620px;height:620px;opacity:1;pointer-events:none;animation:lgDrift 120s linear infinite}
@@ -436,15 +470,38 @@ body.dark .ambient{--amb-line:rgba(109,147,255,.5);--amb-red:rgba(255,107,120,.8
 .amb-line .x-dot{fill:var(--amb-dot)}
 
 @keyframes wlSweep{0%,55%{transform:translateX(-110%)}85%,100%{transform:translateX(110%)}}
-@media (prefers-reduced-motion:reduce){
-  .welcome::after,.welcome .wl-contours{animation:none!important}
-}
+.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;--amb-line:rgba(29,78,216,.45);--amb-red:rgba(230,57,70,.85);--amb-dot:#1d4ed8}
+body.dark .ambient{--amb-line:rgba(109,147,255,.5);--amb-red:rgba(255,107,120,.85);--amb-dot:#9db6ff}
+.main>.topbar,.main>.content{position:relative;z-index:1}
+.amb-line{position:absolute;left:0;bottom:0;width:100%;height:50vh;filter:drop-shadow(0 0 8px rgba(29,78,216,.25))}
+.amb-line .x-base{fill:none;stroke:var(--amb-line);opacity:.18;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.amb-line .x-main{fill:none;stroke:var(--amb-line);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.amb-line .x-red{fill:none;stroke:var(--amb-red);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
+.amb-line .x-dot{fill:var(--amb-dot)}
 
-/* ============ Navegação entre páginas dentro do painel ============ */
-.page-view{display:none}
-.page-view.active{display:block}
-.placeholder-panel{text-align:center;padding:60px 20px;color:var(--muted)}
-.placeholder-panel .icon{font-size:34px;margin-bottom:10px}
+
+.welcome .wl-text{position:relative;z-index:1}
+.welcome .wl-contours{position:absolute;right:-140px;top:-330px;width:620px;height:620px;opacity:1;pointer-events:none;animation:lgDrift 120s linear infinite}
+.welcome .wl-contours path{fill:none;stroke:rgba(255,255,255,.09);stroke-width:1.2}
+.welcome .wl-climb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 0 8px rgba(255,255,255,.25));-webkit-mask-image:linear-gradient(90deg,transparent 0,transparent 32%,#000 58%);mask-image:linear-gradient(90deg,transparent 0,transparent 32%,#000 58%)}
+.welcome::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.10) 50%,transparent 58%);transform:translateX(-110%);animation:wlSweep 10s ease-in-out infinite;pointer-events:none}
+.wl-climb .x-base{fill:none;stroke:rgba(255,255,255,.08);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.wl-climb .x-main{fill:none;stroke:rgba(255,255,255,.5);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.wl-climb .x-red{fill:none;stroke:#ff6b78;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.wl-climb .x-dot{fill:#fff}
+.wl-climb .x-ripple{fill:none;stroke:#ffd166;stroke-width:1.6}
+
+.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;--amb-line:rgba(29,78,216,.45);--amb-red:rgba(230,57,70,.85);--amb-dot:#1d4ed8}
+body.dark .ambient{--amb-line:rgba(109,147,255,.5);--amb-red:rgba(255,107,120,.85);--amb-dot:#9db6ff}
+.main>.topbar,.main>.content{position:relative;z-index:1}
+.amb-line{position:absolute;left:0;bottom:0;width:100%;height:50vh;filter:drop-shadow(0 0 8px rgba(29,78,216,.25))}
+.amb-line .x-base{fill:none;stroke:var(--amb-line);opacity:.18;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.amb-line .x-main{fill:none;stroke:var(--amb-line);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.amb-line .x-red{fill:none;stroke:var(--amb-red);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
+.amb-line .x-dot{fill:var(--amb-dot)}
+
+@keyframes wlSweep{0%,55%{transform:translateX(-110%)}85%,100%{transform:translateX(110%)}}
+
 </style>
 </head>
 <body>
@@ -571,10 +628,11 @@ body.dark .ambient{--amb-line:rgba(109,147,255,.5);--amb-red:rgba(255,107,120,.8
 
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
 
-  <main class="main">
     <div class="ambient" aria-hidden="true">
       <svg class="amb-line" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice"><path class="x-base" d="M-20 290 L260 240 L400 190 L450 214 L500 180 L760 120 L870 80 L920 104 L970 70 L1180 28 L1260 6"/><path class="x-main" d="M-20 290 L260 240 L400 190 L450 214 L500 180 L760 120 L870 80 L920 104 L970 70 L1180 28 L1260 6" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"><animate attributeName="stroke-dashoffset" values="1;0;0" keyTimes="0;0.65;1" dur="16s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0" keyTimes="0;.88;1" dur="16s" repeatCount="indefinite"/></path><path class="x-red" d="M400 190 L450 214 L500 180" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"><animate attributeName="stroke-dashoffset" values="1;1;0;0" keyTimes="0;0.2092;0.2651;1" dur="16s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0" keyTimes="0;.88;1" dur="16s" repeatCount="indefinite"/></path><path class="x-red" d="M870 80 L920 104 L970 70" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"><animate attributeName="stroke-dashoffset" values="1;1;0;0" keyTimes="0;0.4505;0.5065;1" dur="16s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0" keyTimes="0;.88;1" dur="16s" repeatCount="indefinite"/></path><circle class="x-dot" r="6"><animateMotion path="M-20 290 L260 240 L400 190 L450 214 L500 180 L760 120 L870 80 L920 104 L970 70 L1180 28 L1260 6" keyPoints="0;1;1" keyTimes="0;0.65;1" calcMode="linear" dur="16s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.65;0.7000000000000001;1" dur="16s" repeatCount="indefinite"/></circle></svg>
     </div>
+
+  <main class="main">
     <header class="topbar">
       <div style="display:flex;align-items:center;gap:14px">
         <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" onclick="toggleSidebar()">
@@ -762,10 +820,10 @@ body.dark .ambient{--amb-line:rgba(109,147,255,.5);--amb-red:rgba(255,107,120,.8
             <div id="matFormMessage" class="success"></div>
             <div class="form-group">
               <label>Nome do aluno</label>
-              <input id="matStudent" type="text" list="studentListDatalist" placeholder="Ex.: Caio">
+              <input id="matStudent" type="text" list="studentListDatalist" placeholder="Ex.: Caio" oninput="populateMatLessons()">
               <datalist id="studentListDatalist"></datalist>
             </div>
-            <div class="form-group"><label>Título da aula (opcional)</label><input id="matTitle" type="text" placeholder="Ex.: Lesson 04 — Daily Routine"></div>
+            <div class="form-group"><label>Aula</label><select id="matLesson"><option value="">Selecione o aluno primeiro</option></select></div>
             <div class="form-group"><label>Plano de aula (Word)</label><input id="matPlano" type="file" accept=".doc,.docx"></div>
             <div class="form-group"><label>Apostila do aluno (PDF)</label><input id="matApostila" type="file" accept=".pdf"></div>
             <div class="form-buttons">
@@ -836,6 +894,7 @@ body.dark .ambient{--amb-line:rgba(109,147,255,.5);--amb-red:rgba(255,107,120,.8
               </div>
               <button class="btn-primary" onclick="assignStudent()">Liberar</button>
             </div>
+            <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="assignAllStudents()">🌐 Liberar para todos os alunos</button>
             <div id="assignList" style="margin-top:16px"></div>
           </div>
         </div>
@@ -856,32 +915,33 @@ body.dark .ambient{--amb-line:rgba(109,147,255,.5);--amb-red:rgba(255,107,120,.8
       <!-- ===================== PÁGINA: FLASHCARDS ===================== -->
       <div id="page-flashcards" class="page-view">
         <div class="flash-grid">
+          <div class="card" style="text-align:center">
+            <div class="section-title" style="text-align:left"><h2>Estudar</h2><button class="btn-secondary" onclick="loadFlashcards()">↻ Atualizar</button></div>
+            <div id="studyContent"><div class="loading">Carregando cards...</div></div>
+          </div>
+
           <div class="card">
-            <h2 id="flashFormTitle">Novo card</h2>
+            <h2 id="flashFormTitle" style="font-size:16px">Novo card</h2>
             <div id="flashFormMessage" class="success"></div>
             <div class="form-group"><label>Palavra / termo (inglês)</label><input id="flashWord" type="text" placeholder="ex: procrastinate" oninput="buildSearchLinks()"></div>
             <div class="form-group"><label>Tradução</label><input id="flashTranslation" type="text" placeholder="ex: procrastinar, adiar"></div>
             <div class="form-group"><label>Frase de exemplo (opcional)</label><input id="flashExample" type="text" placeholder="ex: Stop procrastinating."></div>
             <div class="form-group"><label>Notas (opcional)</label><input id="flashNotes" type="text" placeholder="ex: verbo, uso informal..."></div>
             <button class="btn-primary" style="width:100%" onclick="saveFlashcard()">Salvar card</button>
-            <p style="font-size:13px;color:var(--muted);margin:14px 0 4px">Não sabe a tradução? Pesquise (precisa de internet):</p>
+            <p style="font-size:12px;color:var(--muted);margin:12px 0 4px">Não sabe a tradução? Pesquise:</p>
             <div class="search-links" id="searchLinks"></div>
           </div>
+        </div>
 
-          <div>
-            <div class="card">
-              <div class="section-title"><h2>Estudar</h2><button class="btn-secondary" onclick="loadFlashcards()">↻ Atualizar</button></div>
-              <div id="studyContent"><div class="loading">Carregando cards...</div></div>
-            </div>
-
-            <div class="card" style="margin-top:20px">
-              <div class="section-title">
-                <h2>Meus cards</h2>
-                <input id="flashFilter" type="text" placeholder="Filtrar..." style="width:auto;min-width:160px" oninput="renderFlashList()">
-              </div>
-              <div id="flashListStat" style="font-size:13px;color:var(--muted);margin-bottom:10px"></div>
-              <div id="flashListContainer"></div>
-            </div>
+        <div class="card" style="margin-top:20px">
+          <div class="section-title">
+            <h2>Meus cards</h2>
+            <button id="toggleFlashListBtn" class="btn-secondary" onclick="toggleFlashList()">Mostrar</button>
+          </div>
+          <div id="flashListCollapse" class="hidden">
+            <input id="flashFilter" type="text" placeholder="Filtrar..." style="margin-bottom:12px" oninput="renderFlashList()">
+            <div id="flashListStat" style="font-size:13px;color:var(--muted);margin-bottom:10px"></div>
+            <div id="flashListContainer"></div>
           </div>
         </div>
       </div>
@@ -941,11 +1001,32 @@ body.dark .ambient{--amb-line:rgba(109,147,255,.5);--amb-red:rgba(255,107,120,.8
           </div>
 
           <div class="card">
-            <h2>Link da aula (Google Meet)</h2>
-            <p style="font-size:13px;color:var(--muted);margin-top:-6px">Esse link aparece pros seus alunos na aba "Aula Online" deles, com um botão de entrar.</p>
+            <h2>Links da aula (Google Meet)</h2>
+            <p style="font-size:13px;color:var(--muted);margin-top:-6px">Escolha quem recebe cada link. Um link específico de um aluno tem prioridade sobre o link geral. Pode expirar sozinho depois de algumas horas ou ficar até você excluir.</p>
             <div id="meetLinkMessage" class="success"></div>
+            <div class="form-group"><label>Quem recebe</label><select id="meetLinkRecipient" onchange="populateMeetLessons()"><option value="">Todos os alunos</option></select></div>
+            <div class="form-group"><label>Aula vinculada (opcional)</label><select id="meetLinkLesson"><option value="">Sem aula (fica até o prazo)</option></select></div>
             <div class="form-group"><label>Link do Google Meet</label><input id="meetLinkInput" type="text" placeholder="https://meet.google.com/xxx-xxxx-xxx"></div>
-            <button class="btn-primary" style="width:100%" onclick="saveMeetLink()">Salvar link</button>
+            <div class="form-group"><label>Validade</label>
+              <select id="meetLinkExpiry">
+                <option value="0">Sem prazo (excluo manualmente)</option>
+                <option value="1">Expira em 1 hora</option>
+                <option value="2">Expira em 2 horas</option>
+                <option value="4">Expira em 4 horas</option>
+                <option value="8">Expira em 8 horas</option>
+                <option value="24">Expira em 24 horas</option>
+              </select>
+            </div>
+            <button class="btn-primary" style="width:100%" onclick="addMeetLink()">Adicionar link</button>
+            <div id="meetLinksList" style="margin-top:16px"></div>
+          </div>
+
+          <div class="card">
+            <h2>WhatsApp para os alunos</h2>
+            <p style="font-size:13px;color:var(--muted);margin-top:-6px">Aparece como botão "Falar com o professor" na área do aluno.</p>
+            <div id="whatsappMessage" class="success"></div>
+            <div class="form-group"><label>Número com DDD</label><input id="whatsappInput" type="text" placeholder="27988581951"></div>
+            <button class="btn-primary" style="width:100%" onclick="saveWhatsapp()">Salvar WhatsApp</button>
           </div>
 
           <div class="card">
@@ -1272,7 +1353,8 @@ async function showApp(){
   loadActivities();
   loadProfileAvatar();
   loadBusySchedule();
-  loadMeetLinkSetting();
+  loadMeetLinks();
+  loadWhatsappSetting();
 }
 async function checkSession(){
   const {data}=await supabaseClient.auth.getSession();
@@ -1434,9 +1516,10 @@ function renderLessons(){
     div.className="lesson";
     div.innerHTML=`
       <div class="lesson-top"><div><div class="student-name">${escapeHTML(lesson.student)}</div><div class="date">${dt.date} às ${dt.time}</div></div></div>
-      <div class="badges">${fmt}${plan}${cls}</div>
+      <div class="badges">${fmt}${plan}${cls}${lesson.enabled===false?'<span class="badge badge-pending">🚫 Aula desabilitada para o aluno</span>':'<span class="badge badge-online">👁 Visível para o aluno</span>'}</div>
       <div class="lesson-actions">
         <button class="btn-edit" onclick="editLesson(${lesson.id})">✏️ Editar</button>
+        <button class="btn-secondary" onclick="toggleLessonEnabled(${lesson.id},${lesson.enabled===false?"true":"false"})">${lesson.enabled===false?"✅ Habilitar p/ aluno":"🚫 Desabilitar p/ aluno"}</button>
         <button class="btn-secondary" onclick="togglePlan(${lesson.id},${!lesson.plan_done})">${lesson.plan_done?"↩ Plano pendente":"✓ Marcar plano"}</button>
         <button class="btn-secondary" onclick="toggleClass(${lesson.id},${!lesson.class_done})">${lesson.class_done?"↩ Não realizada":"✓ Aula realizada"}</button>
         <button class="btn-danger" onclick="deleteLesson(${lesson.id})">🗑️ Excluir</button>
@@ -1681,11 +1764,33 @@ async function toggleClass(id,value){
   const {error}=await supabaseClient.from("lessons").update(payload).eq("id",id);
   if(error){alert("Erro ao atualizar aula: "+error.message);return} await loadLessons();
 }
+async function toggleLessonEnabled(id,value){
+  const {error}=await supabaseClient.from("lessons").update({enabled:value}).eq("id",id);
+  if(error){alert("Erro ao atualizar: "+error.message);return}
+  await loadLessons();
+}
 async function deleteLesson(id){
   const lesson=lessons.find(x=>x.id===id); if(!lesson)return;
-  if(!confirm(`Excluir a aula de ${lesson.student}?`))return;
-  const {error}=await supabaseClient.from("lessons").delete().eq("id",id);
-  if(error){alert("Erro ao excluir: "+error.message);return} await loadLessons();
+  const dt=formatLessonDateTime(lesson.datetime);
+  if(!confirm(`Excluir a aula de ${lesson.student} (${dt.date} ${dt.time})?\n\nIsso também apaga os materiais (plano e apostila) ligados a essa aula. Não pode ser desfeito.`)) return;
+  try{
+    const {data:mats,error:e0}=await supabaseClient.from("lesson_materials").select("id,plano_path,apostila_path").eq("lesson_id",id);
+    if(e0) throw new Error("materiais: "+e0.message);
+    const paths=(mats||[]).flatMap(m=>[m.plano_path,m.apostila_path]).filter(Boolean);
+    if(paths.length){
+      const {error:e1}=await supabaseClient.storage.from(MATERIALS_BUCKET).remove(paths);
+      if(e1) throw new Error("arquivos: "+e1.message);
+    }
+    if(mats&&mats.length){
+      const {error:e2}=await supabaseClient.from("lesson_materials").delete().eq("lesson_id",id);
+      if(e2) throw new Error("registros de material: "+e2.message);
+    }
+    const {error:e3}=await supabaseClient.from("lessons").delete().eq("id",id);
+    if(e3) throw new Error("aula: "+e3.message);
+    await loadLessons(); loadMaterials();
+  }catch(err){
+    alert("Erro ao excluir. Parte pode ter sido apagada antes do erro:\n"+err.message);
+  }
 }
 function updateStats(){
   const now=Date.now(), fortyEight=48*60*60*1000;
@@ -1855,6 +1960,14 @@ async function gradeCard(knew){
   renderFlashList();
 }
 
+function toggleFlashList(){
+  const box=document.getElementById("flashListCollapse");
+  const btn=document.getElementById("toggleFlashListBtn");
+  const willShow=box.classList.contains("hidden");
+  box.classList.toggle("hidden");
+  btn.textContent=willShow?"Ocultar":"Mostrar";
+  if(willShow) renderFlashList();
+}
 function renderFlashList(){
   const container=document.getElementById("flashListContainer");
   if(!container)return;
@@ -1923,9 +2036,20 @@ async function loadMaterials(){
 
 let editingMaterialId=null;
 
+function populateMatLessons(){
+  const sel=document.getElementById("matLesson");
+  if(!sel) return;
+  const name=(document.getElementById("matStudent").value||"").trim();
+  const mine=lessons.filter(l=>l.student===name).sort((a,b)=>parseLocalDateTime(b.datetime)-parseLocalDateTime(a.datetime));
+  if(!name){ sel.innerHTML='<option value="">Selecione o aluno primeiro</option>'; return; }
+  if(!mine.length){ sel.innerHTML='<option value="">Esse aluno não tem aula na agenda</option>'; return; }
+  sel.innerHTML='<option value="">Selecione a aula</option>'+mine.map(l=>{
+    const d=parseLocalDateTime(l.datetime);
+    return `<option value="${l.id}">${d.toLocaleDateString("pt-BR")} ${pad(d.getHours())}:${pad(d.getMinutes())}${l.enabled===false?" (desabilitada)":""}</option>`;
+  }).join("");
+}
 async function saveMaterial(){
   const student=document.getElementById("matStudent").value.trim();
-  const title=document.getElementById("matTitle").value.trim();
   const planoFile=document.getElementById("matPlano").files[0];
   const apostilaFile=document.getElementById("matApostila").files[0];
 
@@ -1941,7 +2065,10 @@ async function saveMaterial(){
 
   try{
     const folder=`${user.id}/${slugify(student)}`;
-    const record={student,title:title||null};
+    const lessonId=Number(document.getElementById("matLesson").value)||null;
+    const lessonObj=lessonId?lessons.find(l=>l.id===lessonId):null;
+    const lessonTitle=lessonObj?`${lessonObj.student} · ${new Date(lessonObj.datetime).toLocaleDateString("pt-BR")}`:(title||null);
+    const record={student,title:lessonTitle,lesson_id:lessonId};
 
     if(planoFile){
       if(existing && existing.plano_path){
@@ -1992,7 +2119,8 @@ function editMaterial(id){
   const m=materials.find(x=>x.id===id); if(!m)return;
   editingMaterialId=id;
   document.getElementById("matStudent").value=m.student;
-  document.getElementById("matTitle").value=m.title||"";
+  populateMatLessons();
+  document.getElementById("matLesson").value=m.lesson_id||"";
   document.getElementById("matPlano").value="";
   document.getElementById("matApostila").value="";
   document.getElementById("matFormTitle").textContent="Editar material";
@@ -2006,7 +2134,7 @@ function cancelMaterialEdit(){ resetMaterialForm(); }
 function resetMaterialForm(){
   editingMaterialId=null;
   document.getElementById("matStudent").value="";
-  document.getElementById("matTitle").value="";
+  document.getElementById("matLesson").innerHTML='<option value="">Selecione o aluno primeiro</option>';
   document.getElementById("matPlano").value="";
   document.getElementById("matApostila").value="";
   document.getElementById("matFormTitle").textContent="Novo material";
@@ -2045,14 +2173,19 @@ function renderMaterials(){
       const date=new Date(m.created_at).toLocaleDateString("pt-BR");
       const planoLink=m.plano_url?`<button class="btn-secondary" style="font-size:12px;padding:7px 10px" onclick='openPreview(${JSON.stringify(m.plano_url)}, ${JSON.stringify(m.title||m.student)}, "docx")'>📄 Ver plano (Word)</button>`:"";
       const apostilaLink=m.apostila_url?`<button class="btn-secondary" style="font-size:12px;padding:7px 10px" onclick='openPreview(${JSON.stringify(m.apostila_url)}, ${JSON.stringify(m.title||m.student)}, "pdf")'>📘 Ver apostila (PDF)</button>`:"";
+      const off=m.enabled===false;
+      const visBadge=off?'<span class="badge badge-pending">🚫 Oculto para o aluno</span>':'<span class="badge badge-online">👁 Visível para o aluno</span>';
+      const lessonBadge=m.lesson_id?'':'<span class="badge badge-pending">Sem aula vinculada</span>';
       return `
-        <div class="material-item">
+        <div class="material-item" style="${off?"opacity:.6":""}">
           <div>
             <div class="material-title">${escapeHTML(m.title||"Sem título")}</div>
             <div class="material-date">Enviado em ${date}</div>
+            <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${visBadge}${lessonBadge}</div>
           </div>
           <div class="material-actions">
             ${planoLink}${apostilaLink}
+            <button class="btn-secondary" style="font-size:12px;padding:7px 10px" onclick="toggleMaterialEnabled(${m.id},${off?"true":"false"})">${off?"✅ Mostrar ao aluno":"🚫 Ocultar do aluno"}</button>
             <div class="mat-menu">
               <button class="btn-secondary mat-menu-btn" style="font-size:12px;padding:7px 10px" onclick="toggleMatMenu(event, ${m.id})">⋮</button>
               <div class="mat-menu-popup hidden" id="matMenu-${m.id}">
@@ -2067,6 +2200,11 @@ function renderMaterials(){
   }).join("");
 }
 
+async function toggleMaterialEnabled(id,value){
+  const {error}=await supabaseClient.from("lesson_materials").update({enabled:value}).eq("id",id);
+  if(error){alert("Erro ao atualizar: "+error.message);return}
+  await loadMaterials();
+}
 async function deleteMaterial(id){
   const material=materials.find(m=>m.id===id); if(!material)return;
   if(!confirm(`Excluir o material "${material.title||"sem título"}" de ${material.student}?`))return;
@@ -2364,10 +2502,12 @@ async function renderAssignList(){
   if(!data||data.length===0){box.innerHTML='<div class="empty">Ainda não liberada pra nenhum aluno.</div>';return}
   box.innerHTML=data.map(as=>{
     const badge = as.status==="concluida" ? '<span class="badge badge-plan">✓ Concluída</span>' : '<span class="badge badge-pending">⏳ Pendente</span>';
-    return `<div class="material-item">
-      <div><div class="material-title">${escapeHTML(as.student)}</div><div style="margin-top:4px">${badge}</div></div>
+    const enabledBadge = as.enabled===false ? '<span class="badge badge-pending">🚫 Desabilitada</span>' : '<span class="badge badge-online">👁 Visível para o aluno</span>';
+    return `<div class="material-item" style="${as.enabled===false?"opacity:.6":""}">
+      <div><div class="material-title">${escapeHTML(as.student)}</div><div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">${badge}${enabledBadge}</div></div>
       <div class="material-actions">
         <button class="btn-secondary" style="font-size:12px;padding:7px 10px" onclick="openCorrection(${as.id})">📝 Corrigir</button>
+        <button class="btn-secondary" style="font-size:12px;padding:7px 10px" onclick="toggleAssignmentEnabled(${as.id},${as.enabled===false?"true":"false"})">${as.enabled===false?"✅ Habilitar":"🚫 Desabilitar"}</button>
         <button class="btn-danger" style="font-size:12px;padding:7px 10px" onclick="unassignStudent(${as.id})">✕ Remover</button>
       </div>
     </div>`;
@@ -2385,6 +2525,27 @@ async function assignStudent(){
     return;
   }
   document.getElementById("assignStudentInput").value="";
+  await renderAssignList();
+}
+async function assignAllStudents(){
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  if(!user){alert("Sessão expirada.");return}
+  const {data:studs,error:e1}=await supabaseClient.from("profiles").select("student_name").eq("role","aluno");
+  if(e1){alert("Erro ao buscar alunos: "+e1.message);return}
+  const names=[...new Set((studs||[]).map(p=>p.student_name).filter(Boolean))];
+  if(!names.length){alert("Nenhum aluno com login criado ainda.");return}
+  if(!confirm(`Liberar essa atividade para todos os ${names.length} aluno(s) com login?`))return;
+  let added=0, skipped=0;
+  for(const name of names){
+    const {error}=await supabaseClient.from("activity_assignments").insert({activity_id:currentAssignActivityId,student:name,status:"pendente",user_id:user.id});
+    if(error){ if(error.code==="23505") skipped++; } else added++;
+  }
+  await renderAssignList();
+  alert(`Liberado para ${added} aluno(s)${skipped?` (${skipped} já tinham acesso)`:""}.`);
+}
+async function toggleAssignmentEnabled(assignmentId,value){
+  const {error}=await supabaseClient.from("activity_assignments").update({enabled:value}).eq("id",assignmentId);
+  if(error){alert("Erro ao atualizar: "+error.message);return}
   await renderAssignList();
 }
 async function unassignStudent(assignmentId){
@@ -2743,21 +2904,68 @@ function renderAvatar(elId,name,avatarUrl){
 /* ================= HORÁRIO DE TRABALHO FIXO (CLT) ================= */
 let busySchedule=null;
 
-/* ================= LINK DO GOOGLE MEET ================= */
-async function loadMeetLinkSetting(){
-  const {data:{user}}=await supabaseClient.auth.getUser();
-  if(!user) return;
-  const {data}=await supabaseClient.from("profiles").select("meet_link").eq("id",user.id).maybeSingle();
-  const input=document.getElementById("meetLinkInput");
-  if(input) input.value=data?.meet_link||"";
+/* ================= LINKS DA AULA (GOOGLE MEET) ================= */
+async function loadMeetLinks(){
+  const sel=document.getElementById("meetLinkRecipient");
+  if(sel){
+    const {data:studs}=await supabaseClient.from("profiles").select("student_name").eq("role","aluno").order("student_name");
+    const current=sel.value;
+    sel.innerHTML='<option value="">Todos os alunos</option>'+(studs||[]).filter(p=>p.student_name).map(p=>`<option value="${escapeHTML(p.student_name)}">${escapeHTML(p.student_name)}</option>`).join("");
+    sel.value=current;
+  }
+  const box=document.getElementById("meetLinksList");
+  if(!box) return;
+  const {data,error}=await supabaseClient.from("meet_links").select("*").order("created_at",{ascending:false});
+  if(error){box.innerHTML=`<div class="empty">Erro: ${escapeHTML(error.message)}</div>`;return}
+  if(!data||!data.length){box.innerHTML='<div class="empty">Nenhum link cadastrado.</div>';return}
+  const now=Date.now();
+  box.innerHTML=data.map(l=>{
+    const expired=l.expires_at && new Date(l.expires_at).getTime()<=now;
+    let status;
+    if(!l.expires_at) status='<span class="badge badge-online">Sem prazo</span>';
+    else if(expired) status='<span class="badge badge-pending">Expirado</span>';
+    else status=`<span class="badge badge-plan">Expira ${new Date(l.expires_at).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>`;
+    return `<div class="material-item" style="${expired?"opacity:.55":""}">
+      <div style="min-width:0">
+        <div class="material-title">${l.student?escapeHTML(l.student):"Todos os alunos"}</div>
+        <div class="material-date" style="word-break:break-all">${escapeHTML(l.link)}</div>
+        <div style="margin-top:6px">${status}</div>
+      </div>
+      <div class="material-actions"><button class="btn-danger" style="font-size:12px;padding:7px 10px" onclick="deleteMeetLink(${l.id})">🗑️ Excluir</button></div>
+    </div>`;
+  }).join("");
 }
-async function saveMeetLink(){
+function populateMeetLessons(){
+  const sel=document.getElementById("meetLinkLesson");
+  if(!sel) return;
+  const name=document.getElementById("meetLinkRecipient").value;
+  const base=lessons.filter(l=>!name||l.student===name).sort((a,b)=>parseLocalDateTime(b.datetime)-parseLocalDateTime(a.datetime));
+  sel.innerHTML='<option value="">Sem aula (fica até o prazo)</option>'+base.map(l=>{
+    const d=parseLocalDateTime(l.datetime);
+    return `<option value="${l.id}">${escapeHTML(l.student)} · ${d.toLocaleDateString("pt-BR")} ${pad(d.getHours())}:${pad(d.getMinutes())}</option>`;
+  }).join("");
+}
+async function addMeetLink(){
   const link=document.getElementById("meetLinkInput").value.trim();
+  const student=document.getElementById("meetLinkRecipient").value||null;
+  const hours=Number(document.getElementById("meetLinkExpiry").value)||0;
+  if(!link){alert("Cole o link do Google Meet.");return}
+  if(!/^https?:\/\//i.test(link)){alert("O link precisa começar com http:// ou https://");return}
   const {data:{user}}=await supabaseClient.auth.getUser();
   if(!user){alert("Sessão expirada.");return}
-  const {error}=await supabaseClient.from("profiles").update({meet_link:link||null}).eq("id",user.id);
+  const expires_at=hours>0?new Date(Date.now()+hours*3600000).toISOString():null;
+  const lesson_id=Number(document.getElementById("meetLinkLesson").value)||null;
+  const {error}=await supabaseClient.from("meet_links").insert({user_id:user.id,student,link,expires_at,lesson_id});
   if(error){alert("Erro ao salvar: "+error.message);return}
-  showMeetLinkMessage(link?"Link salvo!":"Link removido.");
+  document.getElementById("meetLinkInput").value="";
+  showMeetLinkMessage("Link adicionado!");
+  await loadMeetLinks();
+}
+async function deleteMeetLink(id){
+  if(!confirm("Excluir esse link?"))return;
+  const {error}=await supabaseClient.from("meet_links").delete().eq("id",id);
+  if(error){alert("Erro ao excluir: "+error.message);return}
+  await loadMeetLinks();
 }
 function showMeetLinkMessage(text){
   const box=document.getElementById("meetLinkMessage");
@@ -2765,15 +2973,52 @@ function showMeetLinkMessage(text){
   setTimeout(()=>box.style.display="none",2500);
 }
 
+/* ================= WHATSAPP ================= */
+async function loadWhatsappSetting(){
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  if(!user) return;
+  const {data}=await supabaseClient.from("profiles").select("whatsapp").eq("id",user.id).maybeSingle();
+  const input=document.getElementById("whatsappInput");
+  if(input) input.value=data?.whatsapp||"";
+}
+async function saveWhatsapp(){
+  const v=document.getElementById("whatsappInput").value.trim();
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  if(!user){alert("Sessão expirada.");return}
+  const {error}=await supabaseClient.from("profiles").update({whatsapp:v||null}).eq("id",user.id);
+  if(error){alert("Erro ao salvar: "+error.message);return}
+  const box=document.getElementById("whatsappMessage");
+  box.textContent="WhatsApp salvo!";box.style.display="block";
+  setTimeout(()=>box.style.display="none",2500);
+}
+function normalizeWhatsapp(v){
+  const d=String(v||"").replace(/\D/g,"");
+  if(!d) return "";
+  return d.length<=11 ? "55"+d : d;
+}
+
+/* ---- lado do aluno: link da aula + botão de WhatsApp ---- */
 async function loadStudentMeetLink(){
   const box=document.getElementById("studentMeetLinkArea");
   if(!box) return;
-  const {data,error}=await supabaseClient.from("profiles").select("meet_link").eq("role","professor").maybeSingle();
-  if(error || !data?.meet_link){
-    box.innerHTML='<div class="empty">Seu professor ainda não cadastrou o link da aula.</div>';
-    return;
+  const {data:links,error}=await supabaseClient.from("meet_links").select("*").order("created_at",{ascending:false});
+  const now=Date.now();
+  const valid=(links||[]).filter(l=>!l.expires_at||new Date(l.expires_at).getTime()>now);
+  const mine=valid.find(l=>l.student&&l.student===currentStudentName);
+  const general=valid.find(l=>!l.student);
+  const chosen=mine||general;
+  let html="";
+  if(error||!chosen){
+    html='<div class="empty">Seu professor ainda não liberou o link da aula.</div>';
+  }else{
+    html=`<a href="${escapeHTML(chosen.link)}" target="_blank" rel="noopener" class="btn-primary" style="text-decoration:none;display:inline-block;padding:14px 28px">🎥 Entrar na aula</a>`;
   }
-  box.innerHTML=`<a href="${data.meet_link}" target="_blank" rel="noopener" class="btn-primary" style="text-decoration:none;display:inline-block;padding:14px 28px">🎥 Entrar na aula</a>`;
+  const {data:prof}=await supabaseClient.from("profiles").select("whatsapp").eq("role","professor").maybeSingle();
+  const wa=normalizeWhatsapp(prof?.whatsapp);
+  if(wa){
+    html+=`<div style="margin-top:14px"><a href="https://wa.me/${wa}" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;display:inline-block;padding:12px 22px">💬 Falar com o professor no WhatsApp</a></div>`;
+  }
+  box.innerHTML=html;
 }
 
 async function loadBusySchedule(){
@@ -2884,17 +3129,100 @@ function closeStudentAccountModal(){
   document.getElementById("studentAccountModal").classList.add("hidden");
 }
 
+let studentProfilesCache=[];
 async function loadStudentProfiles(){
   const box=document.getElementById("studentProfilesContainer");
   if(!box)return;
   box.innerHTML='<div class="loading">Carregando...</div>';
   const {data,error}=await supabaseClient.from("profiles").select("*").eq("role","aluno").order("created_at",{ascending:false});
   if(error){box.innerHTML=`<div class="empty">Erro ao carregar: ${escapeHTML(error.message)}</div>`;return}
-  if(!data||data.length===0){box.innerHTML='<div class="empty">Nenhum login de aluno criado ainda.</div>';return}
-  box.innerHTML=data.map(p=>`
+  studentProfilesCache=data||[];
+  if(!studentProfilesCache.length){box.innerHTML='<div class="empty">Nenhum login de aluno criado ainda.</div>';return}
+  box.innerHTML=studentProfilesCache.map(p=>`
     <div class="material-item">
       <div><div class="material-title">${escapeHTML(p.student_name||"(sem nome)")}</div><div class="material-date">Criado em ${new Date(p.created_at).toLocaleDateString("pt-BR")}</div></div>
+      <div class="material-actions">
+        <div class="mat-menu">
+          <button class="btn-secondary mat-menu-btn" style="font-size:12px;padding:7px 10px" onclick="toggleStuMenu(event,'${p.id}')">⋮</button>
+          <div class="mat-menu-popup hidden" id="stuMenu-${p.id}">
+            <button onclick="renameStudent('${p.id}')">✏️ Editar nome</button>
+            <button onclick="resetStudentPassword('${p.id}')">🔑 Redefinir senha</button>
+            <button onclick="deleteStudentLogin('${p.id}')">🗑️ Excluir login</button>
+          </div>
+        </div>
+      </div>
     </div>`).join("");
+}
+function toggleStuMenu(event,id){
+  event.stopPropagation();
+  const menu=document.getElementById("stuMenu-"+id);
+  const wasHidden=menu.classList.contains("hidden");
+  closeAllMatMenus();
+  if(wasHidden) menu.classList.remove("hidden");
+}
+async function callManageStudent(payload){
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(!session) throw new Error("Sessão expirada. Entre novamente.");
+  const resp=await fetch(`${SUPABASE_URL}/functions/v1/manage-student`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":`Bearer ${session.access_token}`},
+    body:JSON.stringify(payload)
+  });
+  const result=await resp.json();
+  if(!resp.ok) throw new Error(result.error||"Erro desconhecido.");
+  return result;
+}
+async function renameStudent(id){
+  closeAllMatMenus();
+  const p=studentProfilesCache.find(x=>x.id===id); if(!p) return;
+  const oldName=p.student_name||"";
+  const newName=(prompt("Novo nome do aluno:",oldName)||"").trim();
+  if(!newName||newName===oldName) return;
+  if(!confirm(`Renomear "${oldName}" para "${newName}"? As aulas, materiais, atividades e links desse aluno também serão atualizados para o novo nome.`)) return;
+  const {error}=await supabaseClient.from("profiles").update({student_name:newName}).eq("id",id);
+  if(error){alert("Erro ao renomear: "+error.message);return}
+  const failed=[];
+  for(const t of ["lessons","lesson_materials","activity_assignments","meet_links"]){
+    const {error:e}=await supabaseClient.from(t).update({student:newName}).eq("student",oldName);
+    if(e) failed.push(t+": "+e.message);
+  }
+  if(failed.length) alert("O nome do login foi alterado, mas alguns vínculos falharam:\n"+failed.join("\n"));
+  await loadStudentProfiles();
+  loadLessons(); loadMaterials(); loadActivities(); loadMeetLinks();
+}
+async function resetStudentPassword(id){
+  closeAllMatMenus();
+  const p=studentProfilesCache.find(x=>x.id===id); if(!p) return;
+  const pw=(prompt(`Nova senha para ${p.student_name} (mínimo 6 caracteres):`)||"").trim();
+  if(!pw) return;
+  try{ await callManageStudent({action:"reset-password",student_id:id,new_password:pw}); alert("Senha redefinida."); }
+  catch(err){ alert("Erro: "+err.message); }
+}
+async function deleteStudentLogin(id){
+  closeAllMatMenus();
+  const p=studentProfilesCache.find(x=>x.id===id); if(!p) return;
+  const name=p.student_name||"";
+  const typed=(prompt(`ATENÇÃO: isso apaga TUDO sobre ${name}:\n- a conta de login\n- todas as aulas da agenda\n- todos os materiais (plano e apostila)\n- todas as atividades liberadas e correções\n- links do Meet destinados só a ele\n\nIsso não pode ser desfeito.\n\nPara confirmar, digite o nome do aluno exatamente:`)||"").trim();
+  if(typed!==name){ if(typed) alert("Nome não confere. Nada foi apagado."); return; }
+  try{
+    const {data:assigns,error:e0}=await supabaseClient.from("activity_assignments").select("id").eq("student",name);
+    if(e0) throw new Error("activity_assignments: "+e0.message);
+    const ids=(assigns||[]).map(x=>x.id);
+    if(ids.length){
+      const {error:e1}=await supabaseClient.from("activity_answers").delete().in("assignment_id",ids);
+      if(e1) throw new Error("activity_answers: "+e1.message);
+    }
+    const tables=[["activity_assignments","student"],["lesson_materials","student"],["lessons","student"],["meet_links","student"]];
+    for(const [t,col] of tables){
+      const {error}=await supabaseClient.from(t).delete().eq(col,name);
+      if(error) throw new Error(t+": "+error.message);
+    }
+    await callManageStudent({action:"delete",student_id:id});
+    alert(`Tudo sobre ${name} foi apagado.`);
+    await loadStudentProfiles(); loadMeetLinks(); loadLessons(); loadMaterials(); loadActivities();
+  }catch(err){
+    alert("Erro durante a exclusão. Parte dos dados pode ter sido apagada antes do erro:\n"+err.message);
+  }
 }
 
 resetActivityForm();
@@ -2902,29 +3230,6 @@ loadDarkMode();
 loadAccentColor();
 loadFullTheme();
 checkSession();
-</script>
-<script>
-/* ===== Login: animação ociosa ===== */
-(function(){
-  const scr=document.getElementById("loginScreen"); if(!scr) return;
-  const pw=document.getElementById("loginPassword"), em=document.getElementById("loginEmail");
-  const svg=scr.querySelector(".lg-climb");
-  const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const ph=[...scr.querySelectorAll(".lg-phrase")]; let i=0;
-  if(ph.length) ph[0].classList.add("is-on");
-  if(!reduce && ph.length>1) setInterval(()=>{
-    if(document.hidden||scr.classList.contains("hidden")) return;
-    ph[i].classList.remove("is-on"); i=(i+1)%ph.length; ph[i].classList.add("is-on");
-  },3800);
-  if(svg && svg.pauseAnimations){
-    if(reduce){ svg.setCurrentTime(5.4); svg.pauseAnimations(); }
-    else new MutationObserver(()=>{ scr.classList.contains("hidden") ? svg.pauseAnimations() : svg.unpauseAnimations(); })
-      .observe(scr,{attributes:true,attributeFilter:["class"]});
-  }
-  const sync=()=>scr.classList.toggle("is-typing", document.activeElement===pw || pw.value.length>0);
-  ["focus","blur","input"].forEach(ev=>pw.addEventListener(ev,sync));
-  [em,pw].forEach(el=>el.addEventListener("keydown",e=>{ if(e.key==="Enter") login(); }));
-})();
 </script>
 <script>
 /* ===== Painel: animações ambiente ===== */
