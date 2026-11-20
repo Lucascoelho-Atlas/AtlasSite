@@ -361,9 +361,9 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
 .ld-btn-ig{background:linear-gradient(135deg,#f58529,#dd2a7b 60%,#8134af)}
 .ld-btn-wait{background:transparent;border:1px solid #fff}
 .ld-grid{max-width:980px;margin:0 auto;padding:10px 28px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
-.ld-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:22px}
-.ld-card h3{margin:0 0 8px;font-size:16px}
-.ld-card p{margin:0 0 12px;color:#c3ccd6;font-size:14px;line-height:1.5}
+.ld-card{background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.26);border-radius:14px;padding:22px}
+.ld-card h3{margin:0 0 8px;font-size:16px;color:#fff}
+.ld-card p{margin:0 0 12px;color:#f1f5f9;font-size:14px;line-height:1.5}
 .ld-card strong{font-size:13px;color:#ff7a84}
 .ld-about{max-width:720px;margin:0 auto;padding:30px 28px;text-align:center}
 .ld-about h2,.ld-contact h2{font-size:22px;margin:0 0 14px}
@@ -372,11 +372,8 @@ input[type="file"]::file-selector-button:hover{background:var(--soft)}
 .ld-foot{text-align:center;color:#6b7785;font-size:12px;padding:20px}
 .ld-bar{display:none}
 @media(max-width:720px){
-  #landing{padding-bottom:84px}
   .ld-top{padding:16px 18px}
   .ld-hero{padding:40px 18px 30px}
-  .ld-bar{display:flex;position:fixed;bottom:0;left:0;right:0;background:#0f1e2d;border-top:1px solid rgba(255,255,255,.12);gap:8px;padding:10px;z-index:50}
-  .ld-bar .ld-btn{flex:1;justify-content:center;padding:12px 10px;font-size:13px}
 }
 .lg-back{display:block;margin:16px auto 0;background:none;border:0;color:var(--lg-mute);font:inherit;font-size:13px;cursor:pointer}
 #loginScreen{--lg-navy:#0f1e2d;--lg-blue:#1d4ed8;--lg-sky:#6d93ff;--lg-red:#e63946;--lg-ink:#17212b;--lg-mute:#7b8490;--lg-line:#e5e7eb;
